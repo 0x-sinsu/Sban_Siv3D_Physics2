@@ -1,4 +1,4 @@
-﻿# include <Siv3D.hpp> // Siv3D v0.6.13
+# include <Siv3D.hpp> // Siv3D v0.6.13
 
 /// @brief 文字
 struct P2Glyph
@@ -73,6 +73,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		for (size_t i = 0; i < polygonGlyphs.size(); ++i)
 		{
 			const auto& polygonGlyph = polygonGlyphs[i];
+			// ↓ここを編集します。1.25は漢字、1.0はひらがなです。漢字側の比率を調節してください。
 			const double scale = (isKanji[i] ? 1.25 : 1.0);
 
 			P2Glyph glyph;
@@ -111,10 +112,18 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
+	// ↓ここ(2行)を編集します。fontSizeは基準となるフォントサイズです。先程の比率はこれに基づきます。
+	// fontPathは使用したいフォントファイルのパスです。区切りには「/」or「\\」を使用します。
+	// ヒラギノに類似するフォントである源ノ角ゴシックのダウンロード先はこちら:https://github.com/adobe-fonts/source-han-sans/tree/release/OTF/Japanese
+	const int fontSize = 40;
+	const char32_t* fontPath = U"fontfilepath(絶対パス,拡張子含む)";
+	const Font font{ fontSize, fontPath };
+
 	Window::SetFullscreen(true);
 	Scene::SetBackground(ColorF{ 0.0 });
 
 	// シミュレーションスピード
+	// ここを編集します。単純にスピードです。
 	constexpr double Speed = 1.5;
 
 	// 2D 物理演算のシミュレーションステップ（秒）
@@ -133,10 +142,10 @@ void Main()
 	const double screenWidth = Scene::Width();
 	const double screenHeight = Scene::Height();
 
-	const Font font{ 40, U"C:/VisualStudioProject/P2Glyph_2/SourceHanSansJP-Heavy.otf" };
-
+	//	↓ここを編集します。固定するテキストを記述します。
 	const Array<String> fixedtext =
 	{
+		// template
 		U"全てあなたの所為です。",
 	};
 	// テキストの幅と高さを計算
@@ -156,25 +165,17 @@ void Main()
 	}
 
 	// 歌詞
+	// ここを編集します。文法は次の通りです:
+	// U"歌詞",
+	// 「歌詞」の部分に上から落とす文字を入れます。
+	// 改行も可能です。
 	const Array<String> texts =
 	{
-		U"蛍光灯の明かりの下、",
-		U"艷やかな足跡がある、",
-		U"シアン化物の甘い匂いで、",
-		U"手足が痺れはじめ。",
-		U"からだ中に差し込まれてく、",
-		U"いかにもな理由を添えて、",
-		U"どうして針はこちらを向いて、",
-		U"繰り言を吐くの？",
-		U"砂を噛み、",
-		U"鏤骨を齧り、",
-		U"ナメクジが死んでました。",
-		U"それは万有引力の様なものであり",
-		U"抗えば抗う程",
-		U"青く燃え上がるのです。",
-		U"それはテレメトリ信号が指し示す通り、",
-		U"もがく腕や足はもう",
-		U"意味をなさないのです。",
+		// template
+		U"心地よい音　頭蓋の中、",
+		U"ひとりでに骨が折れ、",
+		U"たわむれに描いた傘の中、",
+		U"全てあなたの所為です。",
 	};
 
 	Array<P2Glyph> glyphs = GenerateGlyphs(Vec2{ 0, -1100 }, font, texts);
@@ -189,6 +190,12 @@ void Main()
 
 	while (System::Update())
 	{
+		// Escキーで終了
+		if (KeyEscape.pressed())
+		{
+			break;
+		}
+
 		{
 			// 何番まで登場させてよいかを計算する
 			const int32 t = static_cast<int32>(((stopwatch.ms() * Speed) - 800) / 500);
@@ -238,11 +245,5 @@ void Main()
 
 		// 2D カメラの操作を描画する
 		camera.draw(Palette::Orange);
-
-		// Escキーで終了
-		if (KeyEscape.pressed())
-		{
-			break;
-		}
 	}
 }
