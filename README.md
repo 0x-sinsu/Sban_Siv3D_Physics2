@@ -1,4 +1,4 @@
-# Sban_Siv3D_Physics2  
+# Sban_Siv3D_Physics2(準備中、使用不可)  
 ## これ何？  
 [Sban_Siv3D_Physics1](https://github.com/0x-sinsu/Sban_Siv3D_Physics1)  
 とセット。あちらは[本家動画](https://www.youtube.com/watch?v=7CUpc5K1li4)の1:36辺りの部分の物理演算です。  
