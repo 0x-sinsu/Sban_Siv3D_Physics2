@@ -163,7 +163,7 @@ void Main()
 	// fontPathは使用したいフォントファイルのパスです。区切りには「/」or「\\」を使用します。
 	// ヒラギノに類似するフォントである源ノ角ゴシックのダウンロード先はこちら:https://github.com/adobe-fonts/source-han-sans/tree/release/OTF/Japanese
 	const int fontSize = 40.000000;
-	const char32_t* fontPath = U"C:/VisualStudioProject/P2Glyph_1/SourceHanSansJP-Heavy.otf";
+	const char32_t* fontPath = U"C:/Fontfile/font.otf";
 	const Font font{ fontSize, fontPath };
 
 	Window::SetFullscreen(true);
@@ -203,20 +203,6 @@ void Main()
 	const Array<String> texts =
 	{
 		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
-		U"全てあなたの所為です。",
 	};
 
 	// テキストの幅と高さを計算
@@ -227,7 +213,7 @@ void Main()
 	const Vec2 textPos((screenWidth - textWidth) / 2, (screenHeight - textHeight) / 2);
 
 	// 出力されたP2Glyphの配列を処理して物理ワールドに追加する例
-	Array<P2Glyph> glyph2 = GenerateGlyphs(Vec2{ 0, 0 }, font, texts, fixedtext);
+	Array<P2Glyph> glyph2 = GenerateGlyphs(Vec2{ 0, 0 }, font, fixedtext, Array<String>{});
 
 	for (auto& glyph : glyph2)
 	{
