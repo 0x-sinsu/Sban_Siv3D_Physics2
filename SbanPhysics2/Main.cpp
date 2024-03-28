@@ -285,8 +285,5 @@ void Main()
 			// 2D 物理演算のワールドを StepTime 秒進める
 			world.update(StepTime);
 		}
-
-		// 2D カメラの操作を描画する
-		camera.draw(Palette::Orange);
 	}
 }
