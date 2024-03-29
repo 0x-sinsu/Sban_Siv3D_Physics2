@@ -44,4 +44,4 @@ msbuild "先ほど控えたフォルダパス\SbanPhysics2.sln" /p:Configuration
 ### 「Esc」キーを押すことでプログラムは終了します。  
 実行される画面のサイズ変更方法などはいずれ追記します。変更するのであれば意図する動作になるようにご自由にコードを書き換えてください。  
 
-vswhereを使用しています:[https://github.com/microsoft/vswhere]
+vswhereを使用しています:[https://github.com/microsoft/vswhere(https://github.com/microsoft/vswhere)]
