@@ -1,4 +1,5 @@
 ﻿# include <Siv3D.hpp> // Siv3D v0.6.14
+<<<<<<< HEAD
 # include <iostream>
 # include <fstream>
 # include <locale>
@@ -7,6 +8,8 @@
 # include <vector>
 # include <string>
 //# include "strconv2.h"
+=======
+>>>>>>> f9e0b899731966d6da66020ca982f3d1d81ada4a
 
 /// @brief 文字
 struct P2Glyph
@@ -423,8 +426,11 @@ void Main()
 			// 画面の下端より下に落下した物体を削除する
 			body.remove_if([](const P2Body & g) { return g.getPos().y > 1200; });
 		}
+<<<<<<< HEAD
 
 		while (sw.msF() < 1000.0 / FPS);
         sw.restart();
+=======
+>>>>>>> f9e0b899731966d6da66020ca982f3d1d81ada4a
 	}
 }
