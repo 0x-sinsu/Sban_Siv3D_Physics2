@@ -1,4 +1,8 @@
 # Sban_Siv3D_Physics2  
+
+
+※ビルドしなくても使えるように改良中...あと4E00~以外の漢字への対応もするかもしれない...  
+  
 ## これ何？  
 [Sban_Siv3D_Physics1](https://github.com/0x-sinsu/Sban_Siv3D_Physics1)  
 とセット。あちらは[本家動画](https://www.youtube.com/watch?v=7CUpc5K1li4)の1:36辺りの部分の物理演算です。  
