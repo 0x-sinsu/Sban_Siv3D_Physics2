@@ -1,4 +1,12 @@
-﻿# include <Siv3D.hpp> // Siv3D v0.6.13
+﻿# include <Siv3D.hpp> // Siv3D v0.6.14
+# include <iostream>
+# include <fstream>
+# include <locale>
+# include <unordered_map>
+# include <map>
+# include <vector>
+# include <string>
+//# include "strconv2.h"
 
 /// @brief 文字
 struct P2Glyph
@@ -49,6 +57,46 @@ static Polygon CalculateConvexHull(const MultiPolygon& polygons)
 	return Geometry2D::ConvexHull(points).simplified();
 }
 
+// 設定を読み込む関数
+std::unordered_multimap<std::string, std::string> LoadSettings(const std::string& settingsFilePath) {
+	std::unordered_multimap<std::string, std::string> settings;
+	std::ifstream file(settingsFilePath);
+	std::string line;
+
+	while (std::getline(file, line)) {
+		auto delimiterPos = line.find('=');
+		if (delimiterPos != std::string::npos) {
+			std::string key = line.substr(0, delimiterPos);
+			std::string value = line.substr(delimiterPos + 1);
+			settings.insert({ key, value });
+		}
+	}
+
+	return settings;
+}
+
+s3d::Array<std::string> LoadText(const std::string& filePath) {
+	s3d::Array<std::string> lines;
+	std::ifstream file(filePath);
+	std::string line;
+
+	while (std::getline(file, line)) {
+		lines.push_back(line);
+	}
+
+	return lines;
+}
+
+// std::vector<std::string> を s3d::Array<s3d::String> に変換する関数
+s3d::Array<s3d::String> ConvertToS3DArray(const std::vector<std::string>& stdVector) {
+	s3d::Array<s3d::String> s3dArray;
+	for (const auto& stdString : stdVector) {
+		// s3d::String への変換を明示的に行います。
+		s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
+	}
+	return s3dArray;
+}
+
 /// @brief 各文字を生成します。
 /// @param bottomCenter 最下層の中心位置
 /// @param font フォント
@@ -62,10 +110,41 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	// 下から何行目か
 	int32 lineCount = static_cast<int32>(texts.size());
 
+	// std::unordered_multimapの初期化
+	std::unordered_multimap<std::string, std::string> settingsMap;
+
+	// 設定ファイルのパス
+	const std::string settingsFilePath = "./settings.conf";
+
+	// 設定を読み込む
+	auto settings = LoadSettings(settingsFilePath);
+
+	double kanjiSize = 1.25; // デフォルト値を1.0として初期化
+	auto itkanjiSize = settings.find("kanjiSize");
+	if (itkanjiSize != settings.end()) {
+		try {
+			kanjiSize = std::stod(itkanjiSize->second); // 文字列からdoubleへ変換
+		}
+		catch (const std::invalid_argument& e) {
+			kanjiSize = 1.75;
+		}
+	}
+
 	for (const auto& text : texts)
 	{
 		const Array<PolygonGlyph> polygonGlyphs = font.renderPolygons(text);
-		const Array<bool> isKanji = text.map([](const char32 ch) { return (0x4E00 <= ch); });
+		const Array<bool> isKanji = text.map([](const char32_t ch) {
+			return
+				((0x4E00 <= ch) && (ch <= 0x9FFF)) ||    // 基本的な漢字
+				((0x3400 <= ch) && (ch <= 0x4DBF)) ||    // 拡張A
+				((0x20000 <= ch) && (ch <= 0x2A6DF)) ||  // 拡張B
+				((0x2A700 <= ch) && (ch <= 0x2B73F)) ||  // 拡張C
+				((0x2B740 <= ch) && (ch <= 0x2B81F)) ||  // 拡張D
+				((0x2B820 <= ch) && (ch <= 0x2CEAF)) ||  // 拡張E
+				((0x2CEB0 <= ch) && (ch <= 0x2EBEF)) ||  // 拡張F
+				((0xF900 <= ch) && (ch <= 0xFAFF)) ||    // CJK互換漢字
+				((0x2F800 <= ch) && (ch <= 0x2FA1F));     // CJK互換漢字補助
+			});
 
 		Vec2 basePos{ 0, bottomCenter.y };
 
@@ -74,8 +153,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		for (size_t i = 0; i < polygonGlyphs.size(); ++i)
 		{
 			const auto& polygonGlyph = polygonGlyphs[i];
-			// ↓ここを編集します。1.25は漢字、1.0はひらがなです。漢字側の比率を調節してください。
-			const double scale = (isKanji[i] ? 1.250000 : 1.0);
+			const double scale = (isKanji[i] ? kanjiSize : 1.0);
 
 			P2Glyph glyph;
 			glyph.polygons = polygonGlyph.polygons.scaled(scale);
@@ -111,7 +189,17 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	for (const auto& fixed : fixedtext)
 	{
 		const Array<PolygonGlyph> polygonGlyphs = font.renderPolygons(fixed);
-		const Array<bool> isKanji = fixed.map([](const char32 ch) { return (0x4E00 <= ch); });
+		const Array<bool> isKanji = fixed.map([](const char32_t ch) {return
+				((0x4E00 <= ch) && (ch <= 0x9FFF)) ||    // 基本的な漢字
+				((0x3400 <= ch) && (ch <= 0x4DBF)) ||    // 拡張A
+				((0x20000 <= ch) && (ch <= 0x2A6DF)) ||  // 拡張B
+				((0x2A700 <= ch) && (ch <= 0x2B73F)) ||  // 拡張C
+				((0x2B740 <= ch) && (ch <= 0x2B81F)) ||  // 拡張D
+				((0x2B820 <= ch) && (ch <= 0x2CEAF)) ||  // 拡張E
+				((0x2CEB0 <= ch) && (ch <= 0x2EBEF)) ||  // 拡張F
+				((0xF900 <= ch) && (ch <= 0xFAFF)) ||    // CJK互換漢字
+				((0x2F800 <= ch) && (ch <= 0x2FA1F));     // CJK互換漢字補助
+			});
 
 		Vec2 basePos{ 0, bottomCenter.y };
 
@@ -120,9 +208,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		for (size_t i = 0; i < polygonGlyphs.size(); ++i)
 		{
 			const auto& polygonGlyph = polygonGlyphs[i];
-			// ↓ここを編集します。1.25は漢字、1.0はひらがなです。漢字側の比率を調節してください。
-			const double scale = (isKanji[i] ? 1.250000 : 1.0);
-
+			const double scale = (isKanji[i] ? 1.25 : 1.0);
 			P2Glyph glyph;
 			glyph.polygons = polygonGlyph.polygons.scaled(scale);
 			glyph.convexHull = CalculateConvexHull(polygonGlyph.polygons);
@@ -159,19 +245,64 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
-	// ↓ここ(2行)を編集します。fontSizeは基準となるフォントサイズです。先程の比率はこれに基づきます。
-	// fontPathは使用したいフォントファイルのパスです。区切りには「/」or「\\」を使用します。
-	// ヒラギノに類似するフォントである源ノ角ゴシックのダウンロード先はこちら:https://github.com/adobe-fonts/source-han-sans/tree/release/OTF/Japanese
-	const int fontSize = 40.000000;
-	const char32_t* fontPath = U"C:/Fontfile/font.otf";
-	const Font font{ fontSize, fontPath };
+	// std::unordered_multimapの初期化
+	std::unordered_multimap<std::string, std::string> settingsMap;
+
+	// 設定ファイルのパス
+	const std::string settingsFilePath = "./settings.conf";
+
+	// 設定を読み込む
+	auto settings = LoadSettings(settingsFilePath);
+
+	// フォントパスを取得
+	std::string fontPath;
+	auto itFont = settings.find("fontPath");
+	if (itFont != settings.end()) {
+		fontPath = itFont->second;
+	}
+
+	std::string fontSize;
+	auto itFontSize = settings.find("fontSize");
+	if (itFontSize != settings.end()) {
+		fontSize = itFontSize->second;
+	}
+
+	// std::stringからs3d::Stringへ変換
+	s3d::String s3dFontPath = s3d::Unicode::FromUTF8(fontPath);
+
+	int intFontSize;
+	try {
+		intFontSize = std::stoi(fontSize);
+	}
+	catch (const std::exception) {
+		// 変換に失敗した場合の処理。サイズ70を使うことにする
+		intFontSize = 70;
+	}
+
+	// Fontオブジェクトを初期化
+	const Font font(intFontSize, s3dFontPath);
 
 	Window::SetFullscreen(true);
 	Scene::SetBackground(ColorF{ 0.0 });
 
+	Array<P2Body> body;
+
+	std::string simulationSpeed;
+	auto itsimulationSpeed = settings.find("simulationSpeed");
+	if (itsimulationSpeed != settings.end()) {
+		simulationSpeed = itsimulationSpeed->second;
+	}
+	
 	// シミュレーションスピード
-	// ここを編集します。単純にスピードです。
-	constexpr double Speed = 1.5;
+	double Speed;
+	try {
+		if (!simulationSpeed.empty()) {
+			Speed = std::stod(simulationSpeed); // 文字列をdoubleに変換
+		}
+	}
+	catch (const std::exception& e) {
+		Speed = 1.75;
+	}
 
 	// 2D 物理演算のシミュレーションステップ（秒）
 	constexpr double StepTime = (1.0 / 200.0);
@@ -189,31 +320,33 @@ void Main()
 	const double screenWidth = Scene::Width();
 	const double screenHeight = Scene::Height();
 
-	//	↓ここを編集します。固定するテキストを記述します。
-	const Array<String> fixedtext =
-	{
-		U"全てあなたの所為です。",
-	};
-	
-	// 歌詞
-	// ここを編集します。文法は次の通りです:
-	// U"歌詞",
-	// 「歌詞」の部分に上から落とす文字を入れます。
-	// 改行も可能です。
-	const Array<String> texts =
-	{
-		U"全てあなたの所為です。",
-	};
+	// 読み込んだテキストを保持する変数
+	s3d::Array<std::string> texts;
+	auto itLyrics = settings.find("lyricsPath");
+	if (itLyrics != settings.end()) {
+		texts = LoadText(itLyrics->second);
+	}
+
+	s3d::Array<std::string> fixedtext;
+	auto itFixedtext = settings.find("fixedtextPath");
+	if (itFixedtext != settings.end()) {
+		fixedtext = LoadText(itFixedtext->second);
+	}
+
+	// s3d::Array<s3d::String> に変換
+	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
+	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
 
 	// テキストの幅と高さを計算
-	const double textWidth = font(fixedtext).region().w;
-	const double textHeight = font(fixedtext).region().h;
+	const double textWidth = font(s3dFixedtext).region().w;
+	const double textHeight = font(s3dFixedtext).region().h;
 
 	// テキストを画面の中央に配置するための座標を計算
 	const Vec2 textPos((screenWidth - textWidth) / 2, (screenHeight - textHeight) / 2);
 
 	// 出力されたP2Glyphの配列を処理して物理ワールドに追加する例
-	Array<P2Glyph> glyph2 = GenerateGlyphs(Vec2{ 0, 0 }, font, fixedtext, Array<String>{});
+	Array<P2Glyph> glyphs = GenerateGlyphs(Vec2{ 0, -1100 }, font, s3dTexts, Array<String>{});
+	Array<P2Glyph> glyph2 = GenerateGlyphs(Vec2{ 0, 0 }, font, s3dFixedtext, Array<String>{});
 
 	for (auto& glyph : glyph2)
 	{
@@ -221,15 +354,17 @@ void Main()
 		glyph.body = world.createPolygon(P2Static, glyph.initialPos, glyph.convexHull);
 	}
 
-	Array<P2Glyph> glyphs = GenerateGlyphs(Vec2{ 0, -1100 }, font, texts, fixedtext);
-
-	Camera2D camera{ Vec2{ 0, 0 }, 1.0 };
+	Camera2D camera{ Vec2{ 0, 0 }, 1.0, CameraControl::None_ };
 
 	// 何番まで登場しているか
 	int32 activeOrder = 0;
 
 	// 各行の登場タイミングを決めるためのストップウォッチ
 	Stopwatch stopwatch{ StartImmediately::Yes };
+
+	int FPS = 75; // 1秒間に1画面を書き換える回数
+    Stopwatch sw;
+    sw.start();
 
 	while (System::Update())
 	{
@@ -256,7 +391,7 @@ void Main()
 						glyph.body = world.createPolygon(P2Dynamic, glyph.initialPos, glyph.convexHull);
 
 						// 文字によって重力の倍率を変える
-						glyph.body.setGravityScale(Random(1.0, 1.2));
+						glyph.body.setGravityScale(Random(1.0, 1.25));
 
 						// 後ろが詰まらないように下向きの初速を与える
 						glyph.body.setVelocity(Vec2{ 0, 90 });
@@ -282,11 +417,14 @@ void Main()
 
 		for (accumulatedTime += (Scene::DeltaTime() * Speed); StepTime <= accumulatedTime; accumulatedTime -= StepTime)
 		{
-			// 2D 物理演算のワールドを StepTime 秒進める
+		// 2D 物理演算のワールドを StepTime 秒進める
 			world.update(StepTime);
+
+			// 画面の下端より下に落下した物体を削除する
+			body.remove_if([](const P2Body & g) { return g.getPos().y > 1200; });
 		}
 
-		// 2D カメラの操作を描画する
-		camera.draw(Palette::Orange);
+		while (sw.msF() < 1000.0 / FPS);
+        sw.restart();
 	}
 }
