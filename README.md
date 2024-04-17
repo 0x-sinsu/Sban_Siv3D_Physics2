@@ -45,23 +45,27 @@ fontSize=で指定するサイズをAviUtlで使うフォントサイズの1.25�
 以下、ソースからビルドする際の方法  
 ### ソースコードのダウンロード、配置  
 このリポジトリをgit cloneするか、Zipをダウンロードして適当な場所に配置します。  
+  
 ### ビルド  
 batを使用するか、コマンドを使用するか、普通にVisualStudioを開くか。  
 お好きな方法でどうぞ。  
 成果物はIntermediate\SbanPhysics2\Releaseにできるはずです。  
+  
 Visual Studioでビルドする場合はslnを開きReleaseにしてビルドします。  
+  
 コマンドを使う場合、
 x64 Native Tools Command Prompt for VS 2022を開き、ファイルの配置場所へ移動します。(slnの場所)  
 次のコマンドを実行します。  
 ```Batchfile
 msbuild SbanPhysics2.sln /p:Configuration=Release /p:Platform=x64
 ```
+  
 Batを使う場合、
 build.batを実行します。  
 それだけです。  
 vswhereを同梱してますので、勝手にMSBuildを探してくれます。  
 うまく行かなかったらbatを編集してMSBuildのパスを直接記述してあげて、と言おうとしましたがそれなら上の方法で良さそうですね。  
-
+  
   
 実行される画面のサイズ変更方法は1のreadmeに書いています。  
 
