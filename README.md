@@ -42,41 +42,27 @@ fontSize=で指定するサイズをAviUtlで使うフォントサイズの1.25�
   
   
   
-以下、ソースからビルドする際の方法(というか以前までの使用方法)  
+以下、ソースからビルドする際の方法  
 ### ソースコードのダウンロード、配置  
-次に、[こちら](https://github.com/0x-sinsu/Sban_Siv3D_Physics1)のページの「Code」をクリック、「Download ZIP」をクリックしてダウンロードします。  
-(gitでも問題なし)  
-任意のフォルダに配置します。  
-次に、lyrics.txtに上から降らせる歌詞を入力し、保存します。(文字エンコーディングはUTF-8)  
-次に、fixed.txtに画面中央に固定する文を入力し、保存します。(こちらもUTF-8)  
-次にSbanPhysics2/edit.exeを実行する  
-↓誤判定された場合のみで良いと思います  
-(のですが、現在ウイルスと誤判定されてしまうようですので[こちら](https://support.microsoft.com/ja-jp/windows/windows-%E3%82%BB%E3%82%AD%E3%83%A5%E3%83%AA%E3%83%86%E3%82%A3%E3%81%AB%E3%82%88%E3%82%8B%E4%BF%9D%E8%AD%B7%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%BE%E3%81%99-2ae0363d-0ada-c064-8b56-6a39afb6a963)のサイトの下の方に記載されている  
-"リアルタイム保護を一時的に無効にする"  
-の手順に従い無効化します。  
-作業が終了したら必ず元に戻します。なお、他のセキュリティソフトに関しては私は分かりませんので各自お調べください。  
-ウイルス入ってるんじゃ...と思った場合はedit.cppの中身をチェックしてください。  
-それでも不安な場合はedit.cppを各自コンパイルしてください。  
-コンパイル方法は割愛します。  )  
-edit.exeを開いたら、指示に従い数値を入力します。  
-(標準値というのはあくまでも私がテストした時点でいい感じだった値ですので参考程度にしてください)  
-この後のbuild.batを実行する際もリアルタイム保護の無効化が必要なため、まだ無効化のままにしておきます。  
-  
-### ビルド
-build.batを実行します。  
-しばらく待つとコマンドプロンプトが閉じますので、そうなったらビルド完了です。  
-ビルドが終了すると、Intermediate\SbanPhysics2\Release内にSbanPhysics1.exeファイルが出来ています。  
-ここでリアルタイム保護を有効に戻します。  
-  
----以下は以前のビルド方法です---  
-次にスタートメニューで「x64 Native Tools Command Prompt for VS 2022」と検索し、出てきたものを実行します。  
-そこに以下のコマンドを貼り付け、実行します。  
+このリポジトリをgit cloneするか、Zipをダウンロードして適当な場所に配置します。  
+### ビルド  
+batを使用するか、コマンドを使用するか、普通にVisualStudioを開くか。  
+お好きな方法でどうぞ。  
+成果物はIntermediate\SbanPhysics2\Releaseにできるはずです。  
+Visual Studioでビルドする場合はslnを開きReleaseにしてビルドします。  
+コマンドを使う場合、
+x64 Native Tools Command Prompt for VS 2022を開き、ファイルの配置場所へ移動します。(slnの場所)  
+次のコマンドを実行します。  
 ```Batchfile
-msbuild "先ほど控えたフォルダパス\SbanPhysics2.sln" /p:Configuration=Release /p:Platform=x64
+msbuild SbanPhysics2.sln /p:Configuration=Release /p:Platform=x64
 ```
-大量の文が流れてきますが、そのまま入力待機状態になるまで待ちます。  
-ビルドが終了すると、Intermediate\Physics2\Release内にexeファイルが出来ています。  
+Batを使う場合、
+build.batを実行します。  
+それだけです。  
+vswhereを同梱してますので、勝手にMSBuildを探してくれます。  
+うまく行かなかったらbatを編集してMSBuildのパスを直接記述してあげて、と言おうとしましたがそれなら上の方法で良さそうですね。  
+
   
 実行される画面のサイズ変更方法は1のreadmeに書いています。  
 
-vswhereを使用しています:https://github.com/microsoft/vswhere
+vswhere:https://github.com/microsoft/vswhere
