@@ -26,12 +26,13 @@ Sban_Siv3D_Physics2_{バージョン}
   LGenZenGothicKaiK.ttf
 ```
 
-各ファイルの説明をします。
-  SbanPhysics2.exe - 本体
-  settings.conf - 設定ファイル
-  fixed.txt - 画面中央に固定する文字列を指定するファイル
-  lyrics.txt - 落としたい文字列を指定するファイル
-  GenZenGothic改.ttf - 不具合を取り敢えず対処する用のフォント
+各ファイルの説明をします。  
+  
+    SbanPhysics2.exe - 本体  
+    settings.conf - 設定ファイル  
+    fixed.txt - 画面中央に固定する文字列を指定するファイル  
+    lyrics.txt - 落としたい文字列を指定するファイル  
+    GenZenGothic改.ttf - 不具合を取り敢えず対処する用のフォント  
   
 GenZenGothic改.ttfはK様の作成されたフォントです。  
 SIL Open Font Licenseです。  
