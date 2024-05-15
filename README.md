@@ -34,7 +34,7 @@ Sban_Siv3D_Physics2_{バージョン}
     lyrics.txt - 落としたい文字列を指定するファイル  
     GenZenGothic改.ttf - 不具合を取り敢えず対処する用のフォント  
   
-GenZenGothic改.ttfはK様の作成されたフォントです。  
+GenZenGothic改.ttfはK様によって作成されたフォントです。  
 SIL Open Font Licenseです。  
 仮名のサイズが漢字に対し76~75%に設定されています。  
 本来は当ソフトに仮名の比率を調節する機能があるのですが、めり込むなどの不具合があるためこちらをお使い頂くことを推奨致します。  
