@@ -45,7 +45,8 @@ fixed.txt、lyrics.txtにおいても同様です。
 当の本人はC++初心者です  
   
   
-## ソースからビルドする  
+## ビルドする  
 [ここ](https://siv3d.github.io/ja-jp/)からSDKをインストールしておきます。  
-Ubuntuでは試そうとしましたが上手く行きませんでした。  
+Windows11、SDKバージョンはv0.6.14でビルドできることを確認しています。  
+(というか、v0.6.14以外でビルドは設定を変えないと出来ない。もし別バージョンでビルドする場合は[ここ](https://zenn.dev/reputeless/scraps/4d973fd3bd10b0#comment-fd6585920f0136)を参考に。)
 ビルドすると、`Intermediate/SbanPhysics2/Release`(Releaseビルドの場合)にexeが作成されます。  
