@@ -6,25 +6,21 @@
 一方、こちらは3:10辺りの部分の物理演算を再現しています。  
   
 ## 使い方  
-まず、重要なことを先に。  
-
 ### このプログラムはフルスクリーンで実行されます。  
 ### 「Esc」キーを押すことでプログラムは終了します。  
 
-知らずにどうやって直るの！？となってしまってはいけませんからね。  
+大事です  
+万が一の備えとして3分ほど経過したら自動で終了するようにしてもいいかもしれない  
   
 Releaseから`Sban_Siv3D_Physics2_{バージョン}.zip`をダウンロードし、展開します。  
-バージョン部分は取り敢えずYYYYMMDD形式です。v0.1とかは面倒だったので。  
-Zipへのバージョン表記不要説はある。  
+バージョン部分はYYYYMMDD形式です。  
 展開したフォルダの中身は次のような感じになっているはずです。  
   
-```
-Sban_Siv3D_Physics2_{バージョン}
-  LSbanPhysics2.exe
-  Lfixed.txt
-  Llyrics.txt
-  LGenZenGothicKaiK.ttf
-```
+    Sban_Siv3D_Physics2_{バージョン}
+      LSbanPhysics2.exe
+      Lfixed.txt
+      Llyrics.txt
+      LGenZenGothicKaiK.ttf
 
 各ファイルの説明をします。  
   
@@ -35,7 +31,7 @@ Sban_Siv3D_Physics2_{バージョン}
     GenZenGothic改.ttf - 不具合を取り敢えず対処する用のフォント  
   
 GenZenGothic改.ttfはK様によって作成されたフォントです。  
-SIL Open Font Licenseです。  
+SIL Open Font Licenseなので同梱しています。  
 仮名のサイズが漢字に対し76~75%に設定されています。  
 本来は当ソフトに仮名の比率を調節する機能があるのですが、めり込むなどの不具合があるためこちらをお使い頂くことを推奨致します。  
 
@@ -50,9 +46,6 @@ fixed.txt、lyrics.txtにおいても同様です。
   
   
 ## ソースからビルドする  
-slnファイルを開いてx64、Releaseにしてビルドします。  
-x64 Native Tools~みたいなやつでやるなら、
-```
-SbanPhysics2.sln /p:Configuration=Release /p:Platform="x64"
-```
-になります。
+[ここ](https://siv3d.github.io/ja-jp/)からSDKをインストールしておきます。  
+Ubuntuでは試そうとしましたが上手く行きませんでした。  
+ビルドすると、`Intermediate/SbanPhysics2/Release`(Releaseビルドの場合)にexeが作成されます。  
