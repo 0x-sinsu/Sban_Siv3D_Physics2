@@ -48,5 +48,5 @@ fixed.txt、lyrics.txtにおいても同様です。
 ## ビルドする  
 [ここ](https://siv3d.github.io/ja-jp/)からSDKをインストールしておきます。  
 Windows11、SDKバージョンはv0.6.14でビルドできることを確認しています。  
-(というか、v0.6.14以外でビルドは設定を変えないと出来ない。もし別バージョンでビルドする場合は[ここ](https://zenn.dev/reputeless/scraps/4d973fd3bd10b0#comment-fd6585920f0136)を参考に。)
+(というか、v0.6.14以外でビルドは設定を変えないと出来ない。もし別バージョンでビルドする場合は[ここ](https://zenn.dev/reputeless/scraps/4d973fd3bd10b0#comment-fd6585920f0136)を参考に。)  
 ビルドすると、`Intermediate/SbanPhysics2/Release`(Releaseビルドの場合)にexeが作成されます。  
