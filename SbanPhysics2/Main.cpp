@@ -1,11 +1,11 @@
-﻿# include <Siv3D.hpp> // Siv3D v0.6.14
-# include <iostream>
-# include <fstream>
-# include <locale>
-# include <unordered_map>
-# include <map>
-# include <vector>
-# include <string>
+﻿#include <Siv3D.hpp> // Siv3D v0.6.14
+#include <iostream>
+#include <fstream>
+#include <locale>
+#include <unordered_map>
+#include <map>
+#include <vector>
+#include <string>
 
 /// @brief 文字
 struct P2Glyph
@@ -244,6 +244,10 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
+	// フルスクリーン
+	Window::SetFullscreen(true);
+	Scene::SetBackground(ColorF{ 0.0 });
+
 	// std::unordered_multimapの初期化
 	std::unordered_multimap<std::string, std::string> settingsMap;
 
@@ -252,6 +256,29 @@ void Main()
 
 	// 設定を読み込む
 	auto settings = LoadSettings(settingsFilePath);
+
+	// 設定ファイルの内容を取得
+	s3d::Array<std::string> texts;
+	auto itLyrics = settings.find("lyricsPath");
+	if (itLyrics != settings.end()) {
+		texts = LoadText(itLyrics->second);
+	}
+
+	s3d::Array<std::string> fixedtext;
+	auto itFixedtext = settings.find("fixedtextPath");
+	if (itFixedtext != settings.end()) {
+		fixedtext = LoadText(itFixedtext->second);
+	}
+
+	std::string simulationSpeed;
+	auto itsimulationSpeed = settings.find("simulationSpeed");
+	if (itsimulationSpeed != settings.end()) {
+		simulationSpeed = itsimulationSpeed->second;
+	}
+
+	// s3d::Array<s3d::String> に変換
+	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
+	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
 
 	// フォントパスを取得
 	std::string fontPath;
@@ -274,23 +301,14 @@ void Main()
 		intFontSize = std::stoi(fontSize);
 	}
 	catch (const std::exception) {
-		// 変換に失敗した場合の処理。サイズ70を使うことにする
+		// 変換に失敗した場合の処理(70を使う)
 		intFontSize = 70;
 	}
 
 	// Fontオブジェクトを初期化
 	const Font font(intFontSize, s3dFontPath);
 
-	Window::SetFullscreen(true);
-	Scene::SetBackground(ColorF{ 0.0 });
-
 	Array<P2Body> body;
-
-	std::string simulationSpeed;
-	auto itsimulationSpeed = settings.find("simulationSpeed");
-	if (itsimulationSpeed != settings.end()) {
-		simulationSpeed = itsimulationSpeed->second;
-	}
 	
 	// シミュレーションスピード
 	double Speed;
@@ -318,23 +336,6 @@ void Main()
 	// 画面の幅と高さ
 	const double screenWidth = Scene::Width();
 	const double screenHeight = Scene::Height();
-
-	// 読み込んだテキストを保持する変数
-	s3d::Array<std::string> texts;
-	auto itLyrics = settings.find("lyricsPath");
-	if (itLyrics != settings.end()) {
-		texts = LoadText(itLyrics->second);
-	}
-
-	s3d::Array<std::string> fixedtext;
-	auto itFixedtext = settings.find("fixedtextPath");
-	if (itFixedtext != settings.end()) {
-		fixedtext = LoadText(itFixedtext->second);
-	}
-
-	// s3d::Array<s3d::String> に変換
-	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
-	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
 
 	// テキストの幅と高さを計算
 	const double textWidth = font(s3dFixedtext).region().w;
