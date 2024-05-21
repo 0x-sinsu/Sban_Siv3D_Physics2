@@ -265,7 +265,7 @@ void Main()
 	}
 
 	s3d::Array<std::string> fixedtext;
-	auto itFixedtext = settings.find("fixedtextPath");
+	auto itFixedtext = settings.find("fixedTextPath");
 	if (itFixedtext != settings.end()) {
 		fixedtext = LoadText(itFixedtext->second);
 	}
@@ -274,6 +274,12 @@ void Main()
 	auto itsimulationSpeed = settings.find("simulationSpeed");
 	if (itsimulationSpeed != settings.end()) {
 		simulationSpeed = itsimulationSpeed->second;
+	}
+
+	std::string frameRate;
+	auto itframeRate = settings.find("frameRate");
+	if (itframeRate != settings.end()) {
+		frameRate = itframeRate->second;
 	}
 
 	// s3d::Array<s3d::String> に変換
@@ -362,7 +368,18 @@ void Main()
 	// 各行の登場タイミングを決めるためのストップウォッチ
 	Stopwatch stopwatch{ StartImmediately::Yes };
 
-	int FPS = 75; // 1秒間に1画面を書き換える回数
+	// フレームレートを設定
+	int intframeRate;
+	try {
+		intframeRate = std::stoi(frameRate);
+	}
+	catch (const std::exception) {
+		// 変換に失敗した場合の処理(60を使う)
+		intframeRate = 60;
+	}
+
+	int FPS = intframeRate;
+
 	Stopwatch sw;
 	sw.start();
 
