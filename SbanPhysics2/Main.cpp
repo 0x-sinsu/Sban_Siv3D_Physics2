@@ -118,14 +118,14 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	// 設定を読み込む
 	auto settings = LoadSettings(settingsFilePath);
 
-	double kanjiSize = 1.25; // デフォルト値を1.0として初期化
+	double kanjiSize = 1.0; // デフォルト値を1.0として初期化
 	auto itkanjiSize = settings.find("kanjiSize");
 	if (itkanjiSize != settings.end()) {
 		try {
 			kanjiSize = std::stod(itkanjiSize->second); // 文字列からdoubleへ変換
 		}
 		catch (const std::invalid_argument& e) {
-			kanjiSize = 1.75;
+			kanjiSize = 1.0;
 		}
 	}
 
@@ -189,15 +189,15 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	{
 		const Array<PolygonGlyph> polygonGlyphs = font.renderPolygons(fixed);
 		const Array<bool> isKanji = fixed.map([](const char32_t ch) {return
-				((0x4E00 <= ch) && (ch <= 0x9FFF)) ||    // 基本的な漢字
-				((0x3400 <= ch) && (ch <= 0x4DBF)) ||    // 拡張A
-				((0x20000 <= ch) && (ch <= 0x2A6DF)) ||  // 拡張B
-				((0x2A700 <= ch) && (ch <= 0x2B73F)) ||  // 拡張C
-				((0x2B740 <= ch) && (ch <= 0x2B81F)) ||  // 拡張D
-				((0x2B820 <= ch) && (ch <= 0x2CEAF)) ||  // 拡張E
-				((0x2CEB0 <= ch) && (ch <= 0x2EBEF)) ||  // 拡張F
-				((0xF900 <= ch) && (ch <= 0xFAFF)) ||    // CJK互換漢字
-				((0x2F800 <= ch) && (ch <= 0x2FA1F));     // CJK互換漢字補助
+			((0x4E00 <= ch) && (ch <= 0x9FFF)) ||    // 基本的な漢字
+			((0x3400 <= ch) && (ch <= 0x4DBF)) ||    // 拡張A
+			((0x20000 <= ch) && (ch <= 0x2A6DF)) ||  // 拡張B
+			((0x2A700 <= ch) && (ch <= 0x2B73F)) ||  // 拡張C
+			((0x2B740 <= ch) && (ch <= 0x2B81F)) ||  // 拡張D
+			((0x2B820 <= ch) && (ch <= 0x2CEAF)) ||  // 拡張E
+			((0x2CEB0 <= ch) && (ch <= 0x2EBEF)) ||  // 拡張F
+			((0xF900 <= ch) && (ch <= 0xFAFF)) ||    // CJK互換漢字
+			((0x2F800 <= ch) && (ch <= 0x2FA1F));     // CJK互換漢字補助
 			});
 
 		Vec2 basePos{ 0, bottomCenter.y };
@@ -207,7 +207,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		for (size_t i = 0; i < polygonGlyphs.size(); ++i)
 		{
 			const auto& polygonGlyph = polygonGlyphs[i];
-			const double scale = (isKanji[i] ? 1.25 : 1.0);
+			const double scale = (isKanji[i] ? kanjiSize : 1.0);
 			P2Glyph glyph;
 			glyph.polygons = polygonGlyph.polygons.scaled(scale);
 			glyph.convexHull = CalculateConvexHull(polygonGlyph.polygons);
@@ -265,7 +265,7 @@ void Main()
 	}
 
 	s3d::Array<std::string> fixedtext;
-	auto itFixedtext = settings.find("fixedtextPath");
+	auto itFixedtext = settings.find("fixedTextPath");
 	if (itFixedtext != settings.end()) {
 		fixedtext = LoadText(itFixedtext->second);
 	}
@@ -274,6 +274,12 @@ void Main()
 	auto itsimulationSpeed = settings.find("simulationSpeed");
 	if (itsimulationSpeed != settings.end()) {
 		simulationSpeed = itsimulationSpeed->second;
+	}
+
+	std::string frameRate;
+	auto itframeRate = settings.find("frameRate");
+	if (itframeRate != settings.end()) {
+		frameRate = itframeRate->second;
 	}
 
 	// s3d::Array<s3d::String> に変換
@@ -309,7 +315,7 @@ void Main()
 	const Font font(intFontSize, s3dFontPath);
 
 	Array<P2Body> body;
-	
+
 	// シミュレーションスピード
 	double Speed;
 	try {
@@ -362,9 +368,20 @@ void Main()
 	// 各行の登場タイミングを決めるためのストップウォッチ
 	Stopwatch stopwatch{ StartImmediately::Yes };
 
-	int FPS = 75; // 1秒間に1画面を書き換える回数
-    Stopwatch sw;
-    sw.start();
+	// フレームレートを設定
+	int intframeRate;
+	try {
+		intframeRate = std::stoi(frameRate);
+	}
+	catch (const std::exception) {
+		// 変換に失敗した場合の処理(60を使う)
+		intframeRate = 60;
+	}
+
+	int FPS = intframeRate;
+
+	Stopwatch sw;
+	sw.start();
 
 	while (System::Update())
 	{
@@ -417,15 +434,11 @@ void Main()
 
 		for (accumulatedTime += (Scene::DeltaTime() * Speed); StepTime <= accumulatedTime; accumulatedTime -= StepTime)
 		{
-		// 2D 物理演算のワールドを StepTime 秒進める
+			// 2D 物理演算のワールドを StepTime 秒進める
 			world.update(StepTime);
-
-			// 画面の下端より下に落下した物体を削除する
-			body.remove_if([](const P2Body & g) { return g.getPos().y > 1200; });
 		}
 
-
 		while (sw.msF() < 1000.0 / FPS);
-        sw.restart();
+		sw.restart();
 	}
 }
