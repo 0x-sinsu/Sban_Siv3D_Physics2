@@ -118,14 +118,14 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	// 設定を読み込む
 	auto settings = LoadSettings(settingsFilePath);
 
-	double kanjiSize = 1.25; // デフォルト値を1.0として初期化
+	double kanjiSize = 1.0; // デフォルト値を1.0として初期化
 	auto itkanjiSize = settings.find("kanjiSize");
 	if (itkanjiSize != settings.end()) {
 		try {
 			kanjiSize = std::stod(itkanjiSize->second); // 文字列からdoubleへ変換
 		}
 		catch (const std::invalid_argument& e) {
-			kanjiSize = 1.75;
+			kanjiSize = 1.0;
 		}
 	}
 
@@ -207,7 +207,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		for (size_t i = 0; i < polygonGlyphs.size(); ++i)
 		{
 			const auto& polygonGlyph = polygonGlyphs[i];
-			const double scale = (isKanji[i] ? 1.25 : 1.0);
+			const double scale = (isKanji[i] ? kanjiSize : 1.0);
 			P2Glyph glyph;
 			glyph.polygons = polygonGlyph.polygons.scaled(scale);
 			glyph.convexHull = CalculateConvexHull(polygonGlyph.polygons);
