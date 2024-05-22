@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <string>
+//#include <Windows.h>
 
 /// @brief 文字
 struct P2Glyph
@@ -244,6 +245,11 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
+	auto result = System::MessageBoxOKCancel(U"警告", U"このプログラムはフルスクリーンで実行されます。\n(ウィンドウで実行する場合はコードを書き換えてご自身でビルドしてください)\nEscキーを押すと終了します。\n実行してもよろしいですか？");
+	if (result == MessageBoxResult::Cancel) {
+		return;
+	}
+
 	// フルスクリーン
 	Window::SetFullscreen(true);
 	Scene::SetBackground(ColorF{ 0.0 });
