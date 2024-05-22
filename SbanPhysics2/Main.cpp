@@ -6,7 +6,6 @@
 #include <map>
 #include <vector>
 #include <string>
-//#include <Windows.h>
 
 /// @brief 文字
 struct P2Glyph
