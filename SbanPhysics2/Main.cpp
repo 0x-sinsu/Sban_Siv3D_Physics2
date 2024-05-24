@@ -124,7 +124,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		try {
 			kanjiSize = std::stod(itkanjiSize->second); // 文字列からdoubleへ変換
 		}
-		catch (const std::invalid_argument& e) {
+		catch (const std::invalid_argument) {
 			kanjiSize = 1.0;
 		}
 	}
@@ -322,14 +322,13 @@ void Main()
 	Array<P2Body> body;
 
 	// シミュレーションスピード
-	double Speed;
+	double Speed = 1.75;
 	try {
 		if (!simulationSpeed.empty()) {
 			Speed = std::stod(simulationSpeed); // 文字列をdoubleに変換
 		}
 	}
-	catch (const std::exception& e) {
-		Speed = 1.75;
+	catch (const std::exception) {
 	}
 
 	// 2D 物理演算のシミュレーションステップ（秒）
