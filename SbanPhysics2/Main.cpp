@@ -1,10 +1,7 @@
 ﻿#include <Siv3D.hpp> // Siv3D v0.6.14
-#include <iostream>
 #include <fstream>
 #include <locale>
 #include <unordered_map>
-#include <map>
-#include <vector>
 #include <string>
 
 /// @brief 文字
@@ -56,9 +53,6 @@ static Polygon CalculateConvexHull(const MultiPolygon& polygons)
 	return Geometry2D::ConvexHull(points).simplified();
 }
 
-// 設定ファイルのパス
-const std::string settingsFilePath = "./settings.conf";
-
 // 設定を読み込む関数
 std::unordered_multimap<std::string, std::string> LoadSettings(const std::string& settingsFilePath) {
 	std::unordered_multimap<std::string, std::string> settings;
@@ -98,6 +92,9 @@ s3d::Array<s3d::String> ConvertToS3DArray(const std::vector<std::string>& stdVec
 	}
 	return s3dArray;
 }
+
+// 設定ファイルのパス
+const std::string settingsFilePath = "./settings.conf";
 
 /// @brief 各文字を生成します。
 /// @param bottomCenter 最下層の中心位置
