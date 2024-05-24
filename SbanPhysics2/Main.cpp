@@ -56,6 +56,9 @@ static Polygon CalculateConvexHull(const MultiPolygon& polygons)
 	return Geometry2D::ConvexHull(points).simplified();
 }
 
+// 設定ファイルのパス
+const std::string settingsFilePath = "./settings.conf";
+
 // 設定を読み込む関数
 std::unordered_multimap<std::string, std::string> LoadSettings(const std::string& settingsFilePath) {
 	std::unordered_multimap<std::string, std::string> settings;
@@ -111,9 +114,6 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 	// std::unordered_multimapの初期化
 	std::unordered_multimap<std::string, std::string> settingsMap;
-
-	// 設定ファイルのパス
-	const std::string settingsFilePath = "./settings.conf";
 
 	// 設定を読み込む
 	auto settings = LoadSettings(settingsFilePath);
@@ -255,9 +255,6 @@ void Main()
 
 	// std::unordered_multimapの初期化
 	std::unordered_multimap<std::string, std::string> settingsMap;
-
-	// 設定ファイルのパス
-	const std::string settingsFilePath = "./settings.conf";
 
 	// 設定を読み込む
 	auto settings = LoadSettings(settingsFilePath);
