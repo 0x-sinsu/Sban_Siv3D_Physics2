@@ -87,7 +87,6 @@ s3d::Array<std::string> LoadText(const std::string& filePath) {
 s3d::Array<s3d::String> ConvertToS3DArray(const std::vector<std::string>& stdVector) {
 	s3d::Array<s3d::String> s3dArray;
 	for (const auto& stdString : stdVector) {
-		// s3d::String への変換を明示的に行います。
 		s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
 	}
 	return s3dArray;
@@ -119,7 +118,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	auto itkanjiSize = settings.find("kanjiSize");
 	if (itkanjiSize != settings.end()) {
 		try {
-			kanjiSize = std::stod(itkanjiSize->second); // 文字列からdoubleへ変換
+			kanjiSize = std::stod(itkanjiSize->second);
 		}
 		catch (const std::invalid_argument) {
 			kanjiSize = 1.0;
@@ -317,13 +316,26 @@ void Main()
 
 	// シミュレーションスピード
 	double Speed = 1.75;
-	try {
-		if (!simulationSpeed.empty()) {
-			Speed = std::stod(simulationSpeed); // 文字列をdoubleに変換
-		}
-	}
-	catch (const std::exception) {
-	}
+    if (!simulationSpeed.empty()) {
+        try {
+            Speed = std::stod(simulationSpeed); // 文字列をdoubleに変換
+        }
+        catch (const std::exception) {
+            // 変換に失敗した場合の処理
+        }
+    }
+
+	// フレームレートを設定
+    int intFrameRate = 60;
+    if (!frameRate.empty()) {
+      try {
+        intFrameRate = std::stoi(frameRate);
+      } catch (const std::exception) {
+        // 変換に失敗した場合の処理
+      }
+    }
+
+    int FPS = intFrameRate;
 
 	// 2D 物理演算のシミュレーションステップ（秒）
 	constexpr double StepTime = (1.0 / 200.0);
@@ -365,18 +377,6 @@ void Main()
 
 	// 各行の登場タイミングを決めるためのストップウォッチ
 	Stopwatch stopwatch{ StartImmediately::Yes };
-
-	// フレームレートを設定
-	int intframeRate;
-	try {
-		intframeRate = std::stoi(frameRate);
-	}
-	catch (const std::exception) {
-		// 変換に失敗した場合の処理(60を使う)
-		intframeRate = 60;
-	}
-
-	int FPS = intframeRate;
 
 	Stopwatch sw;
 	sw.start();
