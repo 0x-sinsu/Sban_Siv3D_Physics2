@@ -334,7 +334,7 @@ void Main()
 		try {
 			intFrameRate = std::stoi(frameRate);
 		} catch (const std::exception) {
-      }
+		}
     }
 
     int FPS = intFrameRate;
