@@ -244,6 +244,8 @@ void Main()
 
 	// フルスクリーン
 	Window::SetFullscreen(true);
+
+	// 背景色
 	Scene::SetBackground(ColorF{ 0.0 });
 
 	// std::unordered_multimapの初期化
