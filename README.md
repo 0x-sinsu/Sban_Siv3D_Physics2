@@ -1,6 +1,6 @@
 # Sban_Siv3D_Physics2  
   
-## これ何？  
+## 概要  
 [Sban_Siv3D_Physics1](https://github.com/0x-sinsu/Sban_Siv3D_Physics1)  
 とセット。あちらは[本家動画](https://www.youtube.com/watch?v=7CUpc5K1li4)の1:36辺りの部分の物理演算です。  
 一方、こちらは3:10辺りの部分の物理演算を再現しています。  
@@ -8,12 +8,15 @@
 ## 使い方  
 ### このプログラムはフルスクリーンで実行されます。  
 ### 「Esc」キーを押すことでプログラムは終了します。  
-
-大事です  
-万が一の備えとして3分ほど経過したら自動で終了するようにしてもいいかもしれない  
+<br><br>
   
+<<<<<<< HEAD
 Releaseから`Sban_Siv3D_Physics2_{バージョン}.zip`をダウンロードし、展開します。  
 バージョン部分は`v(年月日)`形式です。(が、ころころ変わるのでSban_Siv3D_Physics2が付いてるものでOK)  
+=======
+Releaseから`Sban_Siv3D_Physics2_{バージョン}.zip`をダウンロードし、展開します。<br><br>
+バージョン部分はYYYYMMDD形式です。  
+>>>>>>> 60aa785d47b7de894b60b1e2785f6184d1522ec5
 展開したフォルダの中身は次のような感じになっているはずです。  
   
     Sban_Siv3D_Physics2_{バージョン}
@@ -31,14 +34,18 @@ Releaseから`Sban_Siv3D_Physics2_{バージョン}.zip`をダウンロードし
     GenZenGothic改.ttf - 不具合を取り敢えず対処する用のフォント  
   
 GenZenGothic改.ttfはK様によって作成されたフォントです。  
-SIL Open Font Licenseなので同梱しています。  
 仮名のサイズが漢字に対し76~75%に設定されています。  
-本来は当ソフトに仮名の比率を調節する機能があるのですが、めり込むなどの不具合があるためこちらをお使い頂くことを推奨致します。  
+本来は当ソフトに文字サイズの比率を調節する機能があるのですが、不具合があるためこちらをお使い頂くことを推奨致します。  
 
-settings.confについては、`fontSize=`の部分だけ編集すればOKです。  
-名前の通りフォントサイズを指定します。  
+settings.confは、<br><br>
+`simulationSpeed=`...スピードを指定する  
+`frameRate=`...フレームレートを指定する  
+`fontSize=`...フォントサイズを指定する  
+`fontPath=`...フォントパスを指定する<br><br>
+といった感じで値を指定しておきます。  
 UTF-8、改行コードはCR+LFで動作することを確認しています。  
-fixed.txt、lyrics.txtにおいても同様です。
+fixed.txt、lyrics.txtにおいても同様、UTF-8、CR+LFで動作します。  
+(恐らくですが、改行コードはCR+LFでなくても問題ないはずです)
 
 
 ちなみに、大体のコードはS3Dコミュの方とかAIとかに書いてもらいました  
@@ -46,7 +53,13 @@ fixed.txt、lyrics.txtにおいても同様です。
   
   
 ## ビルドする  
-[ここ](https://siv3d.github.io/ja-jp/)からSDKをインストールしておきます。  
-Windows11、SDKバージョンはv0.6.14でビルドできることを確認しています。  
-(というか、v0.6.14以外でビルドは設定を変えないと出来ない。もし別バージョンでビルドする場合は[ここ](https://zenn.dev/reputeless/scraps/4d973fd3bd10b0#comment-fd6585920f0136)を参考に。)  
-ビルドすると、`Intermediate/SbanPhysics2/Release`(Releaseビルドの場合)にexeが作成されます。  
+OpenSiv3DのSDKが必要です。  
+[ここ](https://siv3d.github.io/ja-jp/)を見て導入してください。  
+Windows、mac、Ubuntuの3つがありますが、私がビルドできることを確認しているのはWindowsのみです。  
+OSに依存するコードはないので特に問題なくビルドできると思いますが...<br><br>
+開発環境はWindows 11 Pro、Visual Studio Community 2022です。<br><br>
+ビルドすると、  
+`Intermediate/SbanPhysics2/Release`  
+もしくは  
+`Intermediate/SbanPhysics2/Debug`  
+に実行ファイルなどが集まります。

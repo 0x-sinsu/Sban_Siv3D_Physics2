@@ -1,11 +1,5 @@
 ﻿#include <Siv3D.hpp> // Siv3D v0.6.14
-#include <iostream>
 #include <fstream>
-#include <locale>
-#include <unordered_map>
-#include <map>
-#include <vector>
-#include <string>
 
 /// @brief 文字
 struct P2Glyph
@@ -90,11 +84,13 @@ s3d::Array<std::string> LoadText(const std::string& filePath) {
 s3d::Array<s3d::String> ConvertToS3DArray(const std::vector<std::string>& stdVector) {
 	s3d::Array<s3d::String> s3dArray;
 	for (const auto& stdString : stdVector) {
-		// s3d::String への変換を明示的に行います。
 		s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
 	}
 	return s3dArray;
 }
+
+// 設定ファイルのパス
+const std::string settingsFilePath = "./settings.conf";
 
 /// @brief 各文字を生成します。
 /// @param bottomCenter 最下層の中心位置
@@ -112,9 +108,6 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	// std::unordered_multimapの初期化
 	std::unordered_multimap<std::string, std::string> settingsMap;
 
-	// 設定ファイルのパス
-	const std::string settingsFilePath = "./settings.conf";
-
 	// 設定を読み込む
 	auto settings = LoadSettings(settingsFilePath);
 
@@ -122,7 +115,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 	auto itkanjiSize = settings.find("kanjiSize");
 	if (itkanjiSize != settings.end()) {
 		try {
-			kanjiSize = std::stod(itkanjiSize->second); // 文字列からdoubleへ変換
+			kanjiSize = std::stod(itkanjiSize->second);
 		}
 		catch (const std::invalid_argument) {
 			kanjiSize = 1.0;
@@ -244,20 +237,23 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
-	auto result = System::MessageBoxOKCancel(U"警告", U"このプログラムはフルスクリーンで実行されます。\n(ウィンドウで実行する場合はコードを書き換えてご自身でビルドしてください)\nEscキーを押すと終了します。\n実行してもよろしいですか？");
+	auto result = System::MessageBoxOKCancel(
+		U"警告",
+		U"このプログラムはフルスクリーンで実行されます。\n("
+		U"ウィンドウで実行する場合はコードを書き換えてご自身でビルドしてください)"
+		U"\nEscキーを押すと終了します。\n実行してもよろしいですか？");
 	if (result == MessageBoxResult::Cancel) {
 		return;
 	}
 
 	// フルスクリーン
 	Window::SetFullscreen(true);
+
+	// 背景色
 	Scene::SetBackground(ColorF{ 0.0 });
 
 	// std::unordered_multimapの初期化
 	std::unordered_multimap<std::string, std::string> settingsMap;
-
-	// 設定ファイルのパス
-	const std::string settingsFilePath = "./settings.conf";
 
 	// 設定を読み込む
 	auto settings = LoadSettings(settingsFilePath);
@@ -323,6 +319,7 @@ void Main()
 
 	// シミュレーションスピード
 	double Speed = 1.75;
+<<<<<<< HEAD
 	auto itSimulationSpeed = settings.find("simulationSpeed");
 	if (itSimulationSpeed != settings.end()) {
 		try {
@@ -333,6 +330,27 @@ void Main()
 		catch (const std::exception) {
 		}
 	}
+=======
+    if (!simulationSpeed.empty()) {
+        try {
+            Speed = std::stod(simulationSpeed); // 文字列をdoubleに変換
+        }
+        catch (const std::exception) {
+            // 変換に失敗した場合の処理
+        }
+    }
+
+	// フレームレートを設定
+    int intFrameRate = 60;
+    if (!frameRate.empty()) {
+		try {
+			intFrameRate = std::stoi(frameRate);
+		} catch (const std::exception) {
+		}
+    }
+
+    int FPS = intFrameRate;
+>>>>>>> 60aa785d47b7de894b60b1e2785f6184d1522ec5
 
 	// 2D 物理演算のシミュレーションステップ（秒）
 	constexpr double StepTime = (1.0 / 200.0);
@@ -374,18 +392,6 @@ void Main()
 
 	// 各行の登場タイミングを決めるためのストップウォッチ
 	Stopwatch stopwatch{ StartImmediately::Yes };
-
-	// フレームレートを設定
-	int intframeRate;
-	try {
-		intframeRate = std::stoi(frameRate);
-	}
-	catch (const std::exception) {
-		// 変換に失敗した場合の処理(60を使う)
-		intframeRate = 60;
-	}
-
-	int FPS = intframeRate;
 
 	Stopwatch sw;
 	sw.start();
