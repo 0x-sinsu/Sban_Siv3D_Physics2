@@ -277,12 +277,6 @@ void Main()
 		simulationSpeed = itsimulationSpeed->second;
 	}
 
-	std::string frameRate;
-	auto itframeRate = settings.find("frameRate");
-	if (itframeRate != settings.end()) {
-		frameRate = itframeRate->second;
-	}
-
 	// s3d::Array<s3d::String> に変換
 	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
 	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
@@ -327,17 +321,6 @@ void Main()
             // 変換に失敗した場合の処理
         }
     }
-
-	// フレームレートを設定
-    int intFrameRate = 60;
-    if (!frameRate.empty()) {
-		try {
-			intFrameRate = std::stoi(frameRate);
-		} catch (const std::exception) {
-		}
-    }
-
-    int FPS = intFrameRate;
 
 	// 2D 物理演算のシミュレーションステップ（秒）
 	constexpr double StepTime = (1.0 / 200.0);
@@ -431,8 +414,5 @@ void Main()
 			// 2D 物理演算のワールドを StepTime 秒進める
 			world.update(StepTime);
 		}
-
-		while (sw.msF() < 1000.0 / FPS);
-		sw.restart();
 	}
 }
