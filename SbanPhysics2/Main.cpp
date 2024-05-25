@@ -331,10 +331,9 @@ void Main()
 	// フレームレートを設定
     int intFrameRate = 60;
     if (!frameRate.empty()) {
-      try {
-        intFrameRate = std::stoi(frameRate);
-      } catch (const std::exception) {
-        // 変換に失敗した場合の処理
+		try {
+			intFrameRate = std::stoi(frameRate);
+		} catch (const std::exception) {
       }
     }
 
