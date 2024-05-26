@@ -342,7 +342,7 @@ void Main()
 	// テキストを画面の中央に配置するための座標を計算
 	const Vec2 textPos((screenWidth - textWidth) / 2, (screenHeight - textHeight) / 2);
 
-	// 出力されたP2Glyphの配列を処理して物理ワールドに追加する例
+	// 出力されたP2Glyphの配列を処理して物理ワールドに追加する
 	Array<P2Glyph> glyphs = GenerateGlyphs(Vec2{ 0, -1100 }, font, s3dTexts, Array<String>{});
 	Array<P2Glyph> glyph2 = GenerateGlyphs(Vec2{ 0, 0 }, font, s3dFixedtext, Array<String>{});
 
