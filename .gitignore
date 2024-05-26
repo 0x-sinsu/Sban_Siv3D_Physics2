@@ -359,7 +359,68 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-# Fody - auto-generated XML schema
-FodyWeavers.xsd
-/SbanPhysics2/App/SbanPhysics2.exe
-/GitHubRelease
+
+# Xcode
+xcshareddata/
+xcuserdata/
+*.dSYM
+*.xcworkspacedata
+
+
+# macOS
+# https://github.com/github/gitignore/blob/master/Global/macOS.gitignore
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# CMake
+# https://github.com/github/gitignore/blob/master/CMake.gitignore
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+
+# Ninja
+# https://github.com/github/gitignore/blob/master/Global/Ninja.gitignore
+.ninja_deps
+.ninja_log
+build.ninja
+rules.ninja
+
+
+#
+gmon.out
+.vscode/
+*.PVS-Studio.stacktrace.txt
+
+
+# Siv3D
+# example Wavefront .obj files
+!**/example/obj/
+!**/example/obj/*.obj
+
+# Ignore compiled binaries
+**/App/*.app
+**/App/*.exe
+
+# Ignore any saved local files
+**/App/AS_DEBUG/
+**/App/Screenshot/
+
+# Ignore resource files
+#**/App/example
+#**/App/engine
+#**/App/dll
+/SbanPhysics2/App/fixed.txt
+/SbanPhysics2/App/lyrics.txt
+/SbanPhysics2/App/GenZenGothic改.ttf
+/SbanPhysics2/App/settings.conf

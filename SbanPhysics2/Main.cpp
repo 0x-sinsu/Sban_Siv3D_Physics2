@@ -281,11 +281,6 @@ void Main()
 		simulationSpeed = itsimulationSpeed->second;
 	}
 
-	// s3d::Array<s3d::String> に変換
-	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
-	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
-
-	// フォントパスを取得
 	std::string fontPath;
 	auto itFont = settings.find("fontPath");
 	if (itFont != settings.end()) {
@@ -298,16 +293,18 @@ void Main()
 		fontSize = itFontSize->second;
 	}
 
+	// s3d::Array<s3d::String> に変換
+	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
+	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
+
 	// std::stringからs3d::Stringへ変換
 	s3d::String s3dFontPath = s3d::Unicode::FromUTF8(fontPath);
 
-	int intFontSize;
+	int intFontSize = 70;
 	try {
 		intFontSize = std::stoi(fontSize);
 	}
 	catch (const std::exception) {
-		// 変換に失敗した場合の処理(70を使う)
-		intFontSize = 70;
 	}
 
 	// Fontオブジェクトを初期化
@@ -349,7 +346,7 @@ void Main()
 	// テキストを画面の中央に配置するための座標を計算
 	const Vec2 textPos((screenWidth - textWidth) / 2, (screenHeight - textHeight) / 2);
 
-	// 出力されたP2Glyphの配列を処理して物理ワールドに追加する例
+	// 出力されたP2Glyphの配列を処理して物理ワールドに追加する
 	Array<P2Glyph> glyphs = GenerateGlyphs(Vec2{ 0, -1100 }, font, s3dTexts, Array<String>{});
 	Array<P2Glyph> glyph2 = GenerateGlyphs(Vec2{ 0, 0 }, font, s3dFixedtext, Array<String>{});
 
@@ -366,21 +363,6 @@ void Main()
 
 	// 各行の登場タイミングを決めるためのストップウォッチ
 	Stopwatch stopwatch{ StartImmediately::Yes };
-
-	// フレームレートを設定
-	int intframeRate;
-	try {
-		intframeRate = std::stoi(frameRate);
-	}
-	catch (const std::exception) {
-		// 変換に失敗した場合の処理(60を使う)
-		intframeRate = 60;
-	}
-
-	int FPS = intframeRate;
-
-	Stopwatch sw;
-	sw.start();
 
 	while (System::Update())
 	{
