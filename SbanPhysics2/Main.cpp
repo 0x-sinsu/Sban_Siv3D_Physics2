@@ -296,13 +296,11 @@ void Main()
 	// std::stringからs3d::Stringへ変換
 	s3d::String s3dFontPath = s3d::Unicode::FromUTF8(fontPath);
 
-	int intFontSize;
+	int intFontSize = 70;
 	try {
 		intFontSize = std::stoi(fontSize);
 	}
 	catch (const std::exception) {
-		// 変換に失敗した場合の処理(70を使う)
-		intFontSize = 70;
 	}
 
 	// Fontオブジェクトを初期化
