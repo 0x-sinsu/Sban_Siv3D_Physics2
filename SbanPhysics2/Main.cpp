@@ -32,7 +32,7 @@ struct P2Glyph
 	}
 };
 
-/// @brief 物理演算用に多角形の凸包を計算します。
+/// @brief 物理演算用に多角形の凸包を計算
 /// @param polygons 多角形
 /// @return 凸包
 static Polygon CalculateConvexHull(const MultiPolygon& polygons)
@@ -92,7 +92,7 @@ s3d::Array<s3d::String> ConvertToS3DArray(const std::vector<std::string>& stdVec
 // 設定ファイルのパス
 const std::string settingsFilePath = "./settings.conf";
 
-/// @brief 各文字を生成します。
+/// @brief 各文字を生成
 /// @param bottomCenter 最下層の中心位置
 /// @param font フォント
 /// @param texts 歌詞
@@ -166,7 +166,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		const double lineLength = basePos.x;
 		const double halfLineLength = (lineLength * 0.5);
 
-		// 行を中心揃えする
+		// 行を中心揃え
 		for (auto& elem : line)
 		{
 			elem.initialPos.x -= halfLineLength;
@@ -220,7 +220,7 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 		const double lineLength = basePos.x;
 		const double halfLineLength = (lineLength * 0.5);
 
-		// 行を中心揃えする
+		// 行を中心揃え
 		for (auto& elem : line)
 		{
 			elem.initialPos.x -= halfLineLength;
@@ -342,7 +342,7 @@ void Main()
 	// テキストを画面の中央に配置するための座標を計算
 	const Vec2 textPos((screenWidth - textWidth) / 2, (screenHeight - textHeight) / 2);
 
-	// 出力されたP2Glyphの配列を処理して物理ワールドに追加する
+	// 出力されたP2Glyphの配列を処理して物理ワールドに追加
 	Array<P2Glyph> glyphs = GenerateGlyphs(Vec2{ 0, -1100 }, font, s3dTexts, Array<String>{});
 	Array<P2Glyph> glyph2 = GenerateGlyphs(Vec2{ 0, 0 }, font, s3dFixedtext, Array<String>{});
 
@@ -363,7 +363,7 @@ void Main()
 	while (System::Update())
 	{
 		{
-			// 何番まで登場させてよいかを計算する
+			// 何番まで登場させてよいかを計算
 			const int32 t = static_cast<int32>(((stopwatch.ms() * Speed) - 800) / 500);
 
 			if (activeOrder < t) // 順番が進んだ
@@ -375,7 +375,7 @@ void Main()
 				{
 					if (glyph.order == activeOrder)
 					{
-						// 文字の物理演算の物体を作成する
+						// 文字の物理演算の物体を作成
 						glyph.body = world.createPolygon(P2Dynamic, glyph.initialPos, glyph.convexHull);
 
 						// 文字によって重力の倍率を変える
