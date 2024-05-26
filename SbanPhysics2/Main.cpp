@@ -239,11 +239,11 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
-  // 設定ファイルの存在チェック
-  if (!FileSystem::Exists(s3dsettingsFilePath)) {
-    System::MessageBoxOK(U"settings.conf が存在しません。", MessageBoxStyle::Error);
-    return;
-  }
+	// 設定ファイルの存在チェック
+	if (!FileSystem::Exists(s3dsettingsFilePath)) {
+		System::MessageBoxOK(U"settings.conf が存在しません。", MessageBoxStyle::Error);
+	return;
+	}
 
 	// 背景色
 	Scene::SetBackground(ColorF{ 0.0 });
