@@ -277,11 +277,6 @@ void Main()
 		simulationSpeed = itsimulationSpeed->second;
 	}
 
-	// s3d::Array<s3d::String> に変換
-	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
-	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
-
-	// フォントパスを取得
 	std::string fontPath;
 	auto itFont = settings.find("fontPath");
 	if (itFont != settings.end()) {
@@ -293,6 +288,10 @@ void Main()
 	if (itFontSize != settings.end()) {
 		fontSize = itFontSize->second;
 	}
+
+	// s3d::Array<s3d::String> に変換
+	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
+	s3d::Array<s3d::String> s3dFixedtext = ConvertToS3DArray(fixedtext);
 
 	// std::stringからs3d::Stringへ変換
 	s3d::String s3dFontPath = s3d::Unicode::FromUTF8(fontPath);
