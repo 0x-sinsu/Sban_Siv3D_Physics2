@@ -360,9 +360,6 @@ void Main()
 	// 各行の登場タイミングを決めるためのストップウォッチ
 	Stopwatch stopwatch{ StartImmediately::Yes };
 
-	Stopwatch sw;
-	sw.start();
-
 	while (System::Update())
 	{
 		{
