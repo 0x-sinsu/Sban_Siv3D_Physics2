@@ -239,6 +239,8 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
+	Window::SetTitle(U"Sban_Siv3D_Physics2");
+
 	// 設定ファイルの存在チェック
 	if (!FileSystem::Exists(s3dsettingsFilePath)) {
 		System::MessageBoxOK(U"settings.conf が存在しません。", MessageBoxStyle::Error);
