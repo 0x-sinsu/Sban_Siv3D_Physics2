@@ -1,5 +1,6 @@
 ﻿#include <Siv3D.hpp> // Siv3D v0.6.14
 #include <fstream>
+#include <filesystem>
 
 /// @brief 文字
 struct P2Glyph
@@ -53,6 +54,7 @@ static Polygon CalculateConvexHull(const MultiPolygon& polygons)
 // 設定を読み込む関数
 std::unordered_multimap<std::string, std::string> LoadSettings(const std::string& settingsFilePath) {
 	std::unordered_multimap<std::string, std::string> settings;
+
 	std::ifstream file(settingsFilePath);
 	std::string line;
 
@@ -91,6 +93,7 @@ s3d::Array<s3d::String> ConvertToS3DArray(const std::vector<std::string>& stdVec
 
 // 設定ファイルのパス
 const std::string settingsFilePath = "./settings.conf";
+s3d::String s3dsettingsFilePath = s3d::Unicode::FromUTF8(settingsFilePath);
 
 /// @brief 各文字を生成
 /// @param bottomCenter 最下層の中心位置
@@ -237,6 +240,12 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
+  // 設定ファイルの存在チェック
+  if (!FileSystem::Exists(s3dsettingsFilePath)) {
+    System::MessageBoxOK(U"settings.conf が存在しません。", MessageBoxStyle::Error);
+    return;
+  }
+
 	// 背景色
 	Scene::SetBackground(ColorF{ 0.0 });
 
