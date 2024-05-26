@@ -237,18 +237,6 @@ static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
-	auto result = System::MessageBoxOKCancel(
-		U"警告",
-		U"このプログラムはフルスクリーンで実行されます。\n("
-		U"ウィンドウで実行する場合はコードを書き換えてご自身でビルドしてください)"
-		U"\nEscキーを押すと終了します。\n実行してもよろしいですか？");
-	if (result == MessageBoxResult::Cancel) {
-		return;
-	}
-
-	// フルスクリーン
-	Window::SetFullscreen(true);
-
 	// 背景色
 	Scene::SetBackground(ColorF{ 0.0 });
 
@@ -287,6 +275,43 @@ void Main()
 	auto itFontSize = settings.find("fontSize");
 	if (itFontSize != settings.end()) {
 		fontSize = itFontSize->second;
+	}
+
+	// フルスクリーン設定を確認
+	bool fullScreen = false;
+	auto itFullScreen = settings.find("fullScreen");
+	if (itFullScreen != settings.end()) {
+		fullScreen = (itFullScreen->second == "true");
+	}
+
+	if (fullScreen) {
+		// フルスクリーンモードに設定
+		Window::SetFullscreen(true);
+	} else {
+		// ウィンドウサイズの初期値
+		int windowWidth = 1280;
+		int windowHeight = 720;
+
+		// 設定からwindowWidthを取得
+		auto itWindowWidth = settings.find("windowWidth");
+		if (itWindowWidth != settings.end()) {
+			try {
+				windowWidth = std::stoi(itWindowWidth->second);
+			} catch (const std::exception) {
+		}
+
+		// 設定からwindowHeightを取得
+		auto itWindowHeight = settings.find("windowHeight");
+		if (itWindowHeight != settings.end()) {
+			try {
+			windowHeight = std::stoi(itWindowHeight->second);
+            } catch (const std::exception) {
+            }
+		}
+	}
+
+          // ウィンドウサイズを設定
+          Window::Resize(windowWidth, windowHeight);
 	}
 
 	// s3d::Array<s3d::String> に変換
