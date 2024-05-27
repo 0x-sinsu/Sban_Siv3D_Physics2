@@ -258,34 +258,40 @@ void Main()
 
 	// 設定ファイルの内容を取得
 	s3d::Array<std::string> texts;
-	auto itLyrics = settings.find("lyricsPath");
-	if (itLyrics != settings.end()) {
-		texts = LoadText(itLyrics->second);
-	}
-
 	s3d::Array<std::string> fixedtext;
-	auto itFixedtext = settings.find("fixedTextPath");
-	if (itFixedtext != settings.end()) {
-		fixedtext = LoadText(itFixedtext->second);
-	}
-
 	std::string simulationSpeed;
-	auto itsimulationSpeed = settings.find("simulationSpeed");
-	if (itsimulationSpeed != settings.end()) {
-		simulationSpeed = itsimulationSpeed->second;
-	}
-
 	std::string fontPath;
-	auto itFont = settings.find("fontPath");
-	if (itFont != settings.end()) {
-		fontPath = itFont->second;
-	}
-
 	std::string fontSize;
-	auto itFontSize = settings.find("fontSize");
-	if (itFontSize != settings.end()) {
-		fontSize = itFontSize->second;
-	}
+
+	// 各設定の読み込み
+	auto getSetting = [&](const std::string &key, std::string &value, const std::string &errorMessage) {
+		auto it = settings.find(key);
+		if (it != settings.end()) {
+			value = it->second;
+		} else {
+			System::MessageBoxOK(s3d::Unicode::Widen(errorMessage), MessageBoxStyle::Error);
+			return false;
+		}
+		return true;
+	};
+
+	auto getArraySetting = [&](const std::string &key, s3d::Array<std::string> &array, const std::string &errorMessage) {
+		auto it = settings.find(key);
+		if (it != settings.end()) {
+			array = LoadText(it->second);
+		} else {
+			System::MessageBoxOK(s3d::Unicode::Widen(errorMessage), MessageBoxStyle::Error);
+			return false;
+		}
+		return true;
+	};
+	
+	// 設定の読み込みと存在チェック
+	if (!getArraySetting("lyricsPath", texts, "lyricsPath が設定ファイルにありません。")) return;
+	if (!getArraySetting("fixedTextPath", fixedtext, "fixedTextPath が設定ファイルにありません。")) return;
+	if (!getSetting("simulationSpeed", simulationSpeed, "simulationSpeed が設定ファイルにありません。")) return;
+	if (!getSetting("fontPath", fontPath, "fontPath が設定ファイルにありません。")) return;
+	if (!getSetting("fontSize", fontSize, "fontSize が設定ファイルにありません。")) return;
 
 	// フルスクリーン設定を確認
 	bool fullScreen = false;
@@ -348,7 +354,7 @@ void Main()
 	// std::stringからs3d::Stringへ変換
 	s3d::String s3dFontPath = s3d::Unicode::FromUTF8(fontPath);
 
-	int intFontSize = 70;
+	int intFontSize;
 	try {
 		intFontSize = std::stoi(fontSize);
 	}
@@ -361,13 +367,13 @@ void Main()
 	Array<P2Body> body;
 
 	// シミュレーションスピード
-	double Speed = 1.75;
+	double Speed;
     if (!simulationSpeed.empty()) {
         try {
-            Speed = std::stod(simulationSpeed); // 文字列をdoubleに変換
+            Speed = std::stod(simulationSpeed);
         }
         catch (const std::exception) {
-            // 変換に失敗した場合の処理
+          Speed = 1;
         }
     }
 
