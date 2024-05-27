@@ -297,32 +297,49 @@ void Main()
 	if (fullScreen) {
 		// フルスクリーンモードに設定
 		Window::SetFullscreen(true);
-	} else {
-		// ウィンドウサイズの初期値
-		int windowWidth = 1280;
-		int windowHeight = 720;
+        } else {
+			int windowWidth;
+			int windowHeight;
 
-		// 設定からwindowWidthを取得
-		auto itWindowWidth = settings.find("windowWidth");
-		if (itWindowWidth != settings.end()) {
-			try {
-				windowWidth = std::stoi(itWindowWidth->second);
-			} catch (const std::exception) {
+			// 設定からwindowWidthを取得
+			auto itWindowWidth = settings.find("windowWidth");
+			if (itWindowWidth != settings.end()) {
+				try {
+					double tempWidth = std::stod(itWindowWidth->second);
+					if (tempWidth == static_cast<int>(tempWidth)) {
+						windowWidth = static_cast<int>(tempWidth);
+					} else {
+						System::MessageBoxOK(U"windowWidth の値が無効です。整数を指定してください。", MessageBoxStyle::Error);
+						return;
+					}
+				} catch (const std::exception) {
+				}
+			} else {
+				System::MessageBoxOK(U"windowWidth が設定ファイルにありません。", MessageBoxStyle::Error);
+				return;
+			}
+
+			// 設定からwindowHeightを取得
+            auto itWindowHeight = settings.find("windowHeight");
+            if (itWindowHeight != settings.end()) {
+				try {
+					double tempHeight = std::stod(itWindowHeight->second);
+					if (tempHeight == static_cast<int>(tempHeight)) {
+						windowHeight = static_cast<int>(tempHeight);
+					} else {
+						System::MessageBoxOK(U"windowHeight の値が無効です。整数を指定してください。", MessageBoxStyle::Error);
+						return;
+					}
+				} catch (const std::exception) {
+				}
+			} else {
+				System::MessageBoxOK(U"windowHeight が設定ファイルにありません。", MessageBoxStyle::Error);
+				return;
+			}
+
+            Window::Resize(windowWidth, windowHeight);
 		}
-
-		// 設定からwindowHeightを取得
-		auto itWindowHeight = settings.find("windowHeight");
-		if (itWindowHeight != settings.end()) {
-			try {
-			windowHeight = std::stoi(itWindowHeight->second);
-            } catch (const std::exception) {
-            }
-		}
-	}
-
-          // ウィンドウサイズを設定
-          Window::Resize(windowWidth, windowHeight);
-	}
+	
 
 	// s3d::Array<s3d::String> に変換
 	s3d::Array<s3d::String> s3dTexts = ConvertToS3DArray(texts);
