@@ -341,9 +341,9 @@ void Main()
 
 	// フルスクリーン設定を確認
 	bool fullscreen = false;
-	auto itFullScreen = settings.find("fullscreen");
-	if (itFullScreen != settings.end()) {
-		fullscreen = (itFullScreen->second == "true");
+	auto itfullscreen = settings.find("fullscreen");
+	if (itfullscreen != settings.end()) {
+		fullscreen = (itfullscreen->second == "true");
 	}
 
 	if (fullscreen) {
