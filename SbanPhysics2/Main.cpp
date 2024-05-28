@@ -7,9 +7,9 @@ s3d::String s3d_settings_file_path = s3d::Unicode::FromUTF8(settings_file_path);
 
 // 設定を読み込む関数
 std::unordered_map<std::string, std::string>
-load_settings(const std::string &settings_file_path) {
+load_settings(const std::string &local_settings_file_path) {
   std::unordered_map<std::string, std::string> settings;
-  std::ifstream file(settings_file_path);
+  std::ifstream file(local_settings_file_path);
   std::string line;
 
   while (std::getline(file, line)) {
