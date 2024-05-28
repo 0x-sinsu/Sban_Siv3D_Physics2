@@ -1,6 +1,75 @@
 ﻿#include <Siv3D.hpp> // Siv3D v0.6.14
 #include <fstream>
 
+// 設定ファイルのパス
+const std::string settings_file_path = "./settings.conf";
+s3d::String s3d_settings_file_path = s3d::Unicode::FromUTF8(settings_file_path);
+
+// 設定を読み込む関数
+std::unordered_map<std::string, std::string>
+load_settings(const std::string &settings_file_path) {
+  std::unordered_map<std::string, std::string> settings;
+  std::ifstream file(settings_file_path);
+  std::string line;
+
+  while (std::getline(file, line)) {
+    auto delimiter_pos = line.find('=');
+    if (delimiter_pos != std::string::npos) {
+      std::string key = line.substr(0, delimiter_pos);
+      std::string value = line.substr(delimiter_pos + 1);
+      settings.insert({key, value});
+    }
+  }
+
+  return settings;
+}
+
+s3d::Array<std::string> load_text(const std::string &file_path) {
+  s3d::Array<std::string> lines;
+  std::ifstream file(file_path);
+  std::string line;
+
+  while (std::getline(file, line)) {
+    lines.push_back(line);
+  }
+
+  return lines;
+}
+
+
+// std::vector<std::string> を s3d::Array<s3d::String> に変換する関数
+s3d::Array<s3d::String>
+ConvertToS3DArray(const std::vector<std::string> &stdVector) {
+  s3d::Array<s3d::String> s3dArray;
+  for (const auto &stdString : stdVector) {
+    s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
+  }
+  return s3dArray;
+}
+
+
+// 小数を含む数値の判定関数
+bool is_numeric(const std::string &str) {
+  if (str.empty()) {
+    return false;
+  }
+
+  bool has_digit = false;
+  bool has_dot = false;
+
+  for (char c : str) {
+    if (std::isdigit(c)) {
+      has_digit = true;
+    } else if (c == '.' && !has_dot) {
+      has_dot = true;
+    } else {
+      return false; // 数字とドット以外の文字が含まれている場合
+    }
+  }
+
+  return has_digit; // 少なくとも1つの数字が含まれている場合
+}
+
 /// @brief 文字
 struct P2Glyph
 {
@@ -49,57 +118,6 @@ static Polygon CalculateConvexHull(const MultiPolygon& polygons)
 
 	return Geometry2D::ConvexHull(points).simplified();
 }
-
-// 設定を読み込む関数
-std::unordered_map<std::string, std::string>
-load_settings(const std::string& settings_file_path)
-{
-	std::unordered_map<std::string, std::string> settings;
-	std::ifstream file(settings_file_path);
-	std::string line;
-
-	while (std::getline(file, line))
-	{
-		auto delimiter_pos = line.find('=');
-		if (delimiter_pos != std::string::npos)
-		{
-			std::string key = line.substr(0, delimiter_pos);
-			std::string value = line.substr(delimiter_pos + 1);
-			settings.insert({key, value});
-		}
-	}
-
-	return settings;
-}
-
-s3d::Array<std::string> load_text(const std::string& file_path)
-{
-	s3d::Array<std::string> lines;
-	std::ifstream file(file_path);
-	std::string line;
-
-	while (std::getline(file, line))
-	{
-		lines.push_back(line);
-	}
-
-	return lines;
-}
-
-// std::vector<std::string> を s3d::Array<s3d::String> に変換する関数
-s3d::Array<s3d::String> ConvertToS3DArray(const std::vector<std::string>& stdVector)
-{
-	s3d::Array<s3d::String> s3dArray;
-	for (const auto& stdString : stdVector)
-	{
-		s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
-	}
-	return s3dArray;
-}
-
-// 設定ファイルのパス
-const std::string settings_file_path = "./settings.conf";
-s3d::String s3d_settings_file_path = s3d::Unicode::FromUTF8(settings_file_path);
 
 /// @brief 各文字を生成
 /// @param bottomCenter 最下層の中心位置
@@ -397,55 +415,85 @@ void Main()
 		auto it_window_width = settings.find("window_width");
 		if (it_window_width != settings.end())
 		{
-			try
+			const std::string& width_str = it_window_width->second;
+
+			// 文字列が数値であるかどうかを確認
+			if (is_numeric(width_str))
 			{
-				double temp_width =
-					std::stod(it_window_width->second);
-				if (temp_width == static_cast<int>(temp_width))
+				try
 				{
+					double temp_width = std::stod(width_str);
+					if (temp_width <= 0) // 0以下の値は範囲外とする
+					{
+						System::MessageBoxOK(
+							U"window_width の値は1以上の正の数で指定してください。",
+							MessageBoxStyle::Error);
+						return;
+					}
 					window_width = static_cast<int>(temp_width);
 				}
-				else
+				catch (const std::invalid_argument&)
 				{
-					System::MessageBoxOK(U"window_width の値が無効です。整数を指定してください。", MessageBoxStyle::Error);
+					System::MessageBoxOK(
+						U"window_width の値が無効です。数値を指定してください。",
+						MessageBoxStyle::Error);
+					return;
+				} catch (const std::out_of_range&)
+				{
+					System::MessageBoxOK(U"window_width の値が範囲外です。",
+					                     MessageBoxStyle::Error);
 					return;
 				}
-			}
-			catch (const std::exception)
-			{
 			}
 		}
 		else
 		{
-			System::MessageBoxOK(U"window_width が設定ファイルにありません。", MessageBoxStyle::Error);
+			System::MessageBoxOK(
+				U"window_height が設定ファイルにありません。",
+				MessageBoxStyle::Error);
 			return;
 		}
 
-		// 設定から windowHeight を取得
+		// 設定から window_height を取得
 		auto it_window_height = settings.find("window_height");
 		if (it_window_height != settings.end())
 		{
-			try
+			const std::string& height_str = it_window_height->second;
+
+			// 文字列が数値であるかどうかを確認
+			if (is_numeric(height_str))
 			{
-				double temp_height =
-					std::stod(it_window_height->second);
-				if (temp_height == static_cast<int>(temp_height))
+				try
 				{
+					double temp_height = std::stod(height_str);
+					if (temp_height <= 0) // 0以下の値は範囲外とする
+					{
+						System::MessageBoxOK(
+							U"window_height の値は1以上の正の数で指定してください。",
+							MessageBoxStyle::Error);
+						return;
+					}
 					window_height = static_cast<int>(temp_height);
 				}
-				else
+				catch (const std::invalid_argument&)
 				{
-					System::MessageBoxOK(U"window_height の値が無効です。整数を指定してください。", MessageBoxStyle::Error);
+					System::MessageBoxOK(U"window_height の値が無効です。数値を指定してください。",
+					                     MessageBoxStyle::Error);
+					return;
+				} catch (const std::out_of_range&)
+				{
+					System::MessageBoxOK(
+						U"window_height の値が範囲外です。",
+						MessageBoxStyle::Error);
 					return;
 				}
-			}
-			catch (const std::exception)
-			{
 			}
 		}
 		else
 		{
-			System::MessageBoxOK(U"window_height が設定ファイルにありません。", MessageBoxStyle::Error);
+			System::MessageBoxOK(
+				U"window_height が設定ファイルにありません。",
+				MessageBoxStyle::Error);
 			return;
 		}
 
