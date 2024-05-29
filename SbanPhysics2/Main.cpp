@@ -660,6 +660,12 @@ void Main()
 			}
 		}
 
+		glyphs.remove_if([&](const P2Glyph& glyph)
+		{
+			return glyph.body &&
+				(glyph.body.getPos().y > (Scene::Height() + 100));
+		});
+
 		for (accumulated_time += (Scene::DeltaTime() * speed); step_time <= accumulated_time; accumulated_time -=
 		     step_time)
 		{
