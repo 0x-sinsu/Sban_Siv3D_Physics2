@@ -142,5 +142,5 @@ inline bool is_kanji(uint32_t code_point)
 bool is_opt_char(
 	char32_t ch, const std::unordered_map<char32_t, double>& option_ratios)
 {
-	return option_ratios.find(ch) != option_ratios.end();
+	return option_ratios.contains(ch);
 }

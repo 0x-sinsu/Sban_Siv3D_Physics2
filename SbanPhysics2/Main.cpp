@@ -4,7 +4,7 @@
 
 // 設定ファイルのパス
 const std::string settings_file_path = "./settings.conf";
-s3d::String s3d_settings_file_path = s3d::Unicode::FromUTF8(settings_file_path);
+String s3d_settings_file_path = Unicode::FromUTF8(settings_file_path);
 
 // 設定を読み込む関数
 std::unordered_map<std::string, std::string>
@@ -28,9 +28,9 @@ load_settings(const std::string& local_settings_file_path)
 	return settings;
 }
 
-s3d::Array<std::string> load_text(const std::string& file_path)
+Array<std::string> load_text(const std::string& file_path)
 {
-	s3d::Array<std::string> lines;
+	Array<std::string> lines;
 	std::ifstream file(file_path);
 	std::string line;
 
@@ -44,13 +44,13 @@ s3d::Array<std::string> load_text(const std::string& file_path)
 
 
 // std::vector<std::string> を s3d::Array<s3d::String> に変換する関数
-s3d::Array<s3d::String>
+Array<String>
 ConvertToS3DArray(const std::vector<std::string>& stdVector)
 {
-	s3d::Array<s3d::String> s3dArray;
+	Array<String> s3dArray;
 	for (const auto& stdString : stdVector)
 	{
-		s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
+		s3dArray.push_back(Unicode::FromUTF8(stdString));
 	}
 	return s3dArray;
 }
@@ -325,8 +325,8 @@ void Main()
 	std::unordered_map<std::string, std::string> settings = load_settings(settings_file_path);
 
 	// 設定ファイルの内容を取得
-	s3d::Array<std::string> texts;
-	s3d::Array<std::string> fixed_text;
+	Array<std::string> texts;
+	Array<std::string> fixed_text;
 	std::string simulation_speed;
 	std::string font_path;
 	std::string font_size;
@@ -340,7 +340,7 @@ void Main()
 		{
 			if (it->second.empty())
 			{
-				System::MessageBoxOK(s3d::Unicode::Widen(error_message),
+				System::MessageBoxOK(Unicode::Widen(error_message),
 				                     MessageBoxStyle::Error);
 				return false;
 			}
@@ -348,7 +348,7 @@ void Main()
 		}
 		else
 		{
-			System::MessageBoxOK(s3d::Unicode::Widen(error_message),
+			System::MessageBoxOK(Unicode::Widen(error_message),
 			                     MessageBoxStyle::Error);
 			return false;
 		}
@@ -369,19 +369,19 @@ void Main()
 			}
 			catch (const std::invalid_argument&)
 			{
-				System::MessageBoxOK(s3d::Unicode::Widen(error_message),
+				System::MessageBoxOK(Unicode::Widen(error_message),
 				                     MessageBoxStyle::Error);
 				return false;
 			} catch (const std::out_of_range&)
 			{
-				System::MessageBoxOK(s3d::Unicode::Widen(error_message),
+				System::MessageBoxOK(Unicode::Widen(error_message),
 				                     MessageBoxStyle::Error);
 				return false;
 			}
 		}
 		else
 		{
-			System::MessageBoxOK(s3d::Unicode::Widen(error_message),
+			System::MessageBoxOK(Unicode::Widen(error_message),
 			                     MessageBoxStyle::Error);
 			return false;
 		}
@@ -389,7 +389,7 @@ void Main()
 	};
 
 
-	auto get_array_setting = [&](const std::string& key, s3d::Array<std::string>& array,
+	auto get_array_setting = [&](const std::string& key, Array<std::string>& array,
 	                             const std::string& errorMessage)
 	{
 		auto it = settings.find(key);
@@ -399,7 +399,7 @@ void Main()
 		}
 		else
 		{
-			System::MessageBoxOK(s3d::Unicode::Widen(errorMessage), MessageBoxStyle::Error);
+			System::MessageBoxOK(Unicode::Widen(errorMessage), MessageBoxStyle::Error);
 			return false;
 		}
 		return true;
@@ -540,12 +540,12 @@ void Main()
 
 
 	// s3d::Array<s3d::String> に変換
-	s3d::Array<s3d::String> s3d_texts = ConvertToS3DArray(texts);
-	s3d::Array<s3d::String> s3d_fixed_text =
+	Array<String> s3d_texts = ConvertToS3DArray(texts);
+	Array<String> s3d_fixed_text =
 		ConvertToS3DArray(fixed_text);
 
 	// std::stringからs3d::Stringへ変換
-	s3d::String s3d_font_path = s3d::Unicode::FromUTF8(font_path);
+	String s3d_font_path = Unicode::FromUTF8(font_path);
 
 	int int_font_size;
 	try
