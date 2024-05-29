@@ -1,5 +1,6 @@
 ﻿#include <Siv3D.hpp> // Siv3D v0.6.14
 #include <fstream>
+#include "UnicodeRanges.hpp"
 
 // 設定ファイルのパス
 const std::string settings_file_path = "./settings.conf";
@@ -7,67 +8,82 @@ s3d::String s3d_settings_file_path = s3d::Unicode::FromUTF8(settings_file_path);
 
 // 設定を読み込む関数
 std::unordered_map<std::string, std::string>
-load_settings(const std::string &local_settings_file_path) {
-  std::unordered_map<std::string, std::string> settings;
-  std::ifstream file(local_settings_file_path);
-  std::string line;
+load_settings(const std::string& local_settings_file_path)
+{
+	std::unordered_map<std::string, std::string> settings;
+	std::ifstream file(local_settings_file_path);
+	std::string line;
 
-  while (std::getline(file, line)) {
-    auto delimiter_pos = line.find('=');
-    if (delimiter_pos != std::string::npos) {
-      std::string key = line.substr(0, delimiter_pos);
-      std::string value = line.substr(delimiter_pos + 1);
-      settings.insert({key, value});
-    }
-  }
+	while (std::getline(file, line))
+	{
+		auto delimiter_pos = line.find('=');
+		if (delimiter_pos != std::string::npos)
+		{
+			std::string key = line.substr(0, delimiter_pos);
+			std::string value = line.substr(delimiter_pos + 1);
+			settings.insert({key, value});
+		}
+	}
 
-  return settings;
+	return settings;
 }
 
-s3d::Array<std::string> load_text(const std::string &file_path) {
-  s3d::Array<std::string> lines;
-  std::ifstream file(file_path);
-  std::string line;
+s3d::Array<std::string> load_text(const std::string& file_path)
+{
+	s3d::Array<std::string> lines;
+	std::ifstream file(file_path);
+	std::string line;
 
-  while (std::getline(file, line)) {
-    lines.push_back(line);
-  }
+	while (std::getline(file, line))
+	{
+		lines.push_back(line);
+	}
 
-  return lines;
+	return lines;
 }
 
 
 // std::vector<std::string> を s3d::Array<s3d::String> に変換する関数
 s3d::Array<s3d::String>
-ConvertToS3DArray(const std::vector<std::string> &stdVector) {
-  s3d::Array<s3d::String> s3dArray;
-  for (const auto &stdString : stdVector) {
-    s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
-  }
-  return s3dArray;
+ConvertToS3DArray(const std::vector<std::string>& stdVector)
+{
+	s3d::Array<s3d::String> s3dArray;
+	for (const auto& stdString : stdVector)
+	{
+		s3dArray.push_back(s3d::Unicode::FromUTF8(stdString));
+	}
+	return s3dArray;
 }
 
 
 // 小数を含む数値の判定関数
-bool is_numeric(const std::string &str) {
-  if (str.empty()) {
-    return false;
-  }
+bool is_numeric(const std::string& str)
+{
+	if (str.empty())
+	{
+		return false;
+	}
 
-  bool has_digit = false;
-  bool has_dot = false;
+	bool has_digit = false;
+	bool has_dot = false;
 
-  for (char c : str) {
-    if (std::isdigit(c)) {
-      has_digit = true;
-    } else if (c == '.' && !has_dot) {
-      has_dot = true;
-    } else {
-      return false; // 数字とドット以外の文字が含まれている場合
-    }
-  }
+	for (char c : str)
+	{
+		if (std::isdigit(c))
+		{
+			has_digit = true;
+		}
+		else if (c == '.' && !has_dot)
+		{
+			has_dot = true;
+		}
+		else
+		{
+			return false; // 数字とドット以外の文字が含まれている場合
+		}
+	}
 
-  return has_digit; // 少なくとも1つの数字が含まれている場合
+	return has_digit; // 少なくとも1つの数字が含まれている場合
 }
 
 /// @brief 文字
@@ -104,7 +120,8 @@ struct P2Glyph
 /// @brief 物理演算用に多角形の凸包を計算
 /// @param polygons 多角形
 /// @return 凸包
-static Polygon CalculateConvexHull(const MultiPolygon& polygons)
+static Polygon CalculateConvexHull(const MultiPolygon& polygons,
+                                   const double scale)
 {
 	Array<Vec2> points;
 
@@ -112,12 +129,13 @@ static Polygon CalculateConvexHull(const MultiPolygon& polygons)
 	{
 		for (const auto& point : polygon.outer())
 		{
-			points << point;
+			points << (point * scale); // スケールを適用
 		}
 	}
 
 	return Geometry2D::ConvexHull(points).simplified();
 }
+
 
 /// @brief 各文字を生成
 /// @param bottomCenter 最下層の中心位置
@@ -125,149 +143,169 @@ static Polygon CalculateConvexHull(const MultiPolygon& polygons)
 /// @param texts 歌詞
 /// @param fixed_text 固定文字
 /// @return P2Glyph の配列
-static Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font, const Array<String>& texts,
-                                     const Array<String>& fixed_text)
+Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
+                              const Array<String>& texts,
+                              const Array<String>& fixed_text)
 {
-	Array<P2Glyph> allGlyphs;
+	Array<P2Glyph> all_glyphs;
 
 	// 下から何行目か
-	int32 lineCount = static_cast<int32>(texts.size());
-
-	// std::unordered_mapの初期化
-	std::unordered_map<std::string, std::string> settingsMap;
+	int32 line_count = static_cast<int32>(texts.size());
 
 	// 設定を読み込む
-	auto settings = load_settings(settings_file_path);
+	std::unordered_map<std::string, std::string> settings =
+		load_settings(settings_file_path);
 
-	double kanjiSize = 1.0; // デフォルト値を1.0として初期化
-	auto itkanjiSize = settings.find("kanjiSize");
-	if (itkanjiSize != settings.end())
+	// 比率の初期化
+	double kanji_size = 1.0, hiragana_size = 1.0, katakana_size = 1.0;
+	double alphabet_upper_size = 1.0, alphabet_lower_size = 1.0, number_size = 1.0;
+	double half_width_katakana_size = 1.0, katakana_extensions_size = 1.0;
+	std::unordered_map<char32_t, double> option_ratios;
+
+	auto set_ratio = [&](const std::string& key, double& ratio)
 	{
-		try
+		auto it = settings.find(key);
+		if (it != settings.end())
 		{
-			kanjiSize = std::stod(itkanjiSize->second);
+			try
+			{
+				ratio = std::stod(it->second);
+			}
+			catch (const std::invalid_argument&)
+			{
+				ratio = 1.0;
+			}
 		}
-		catch (const std::invalid_argument)
+	};
+
+	set_ratio("kanji", kanji_size);
+	set_ratio("hiragana", hiragana_size);
+	set_ratio("katakana", katakana_size);
+	set_ratio("alphabet_upper", alphabet_upper_size);
+	set_ratio("alphabet_lower", alphabet_lower_size);
+	set_ratio("number", number_size);
+	set_ratio("half_width_katakana", half_width_katakana_size);
+	set_ratio("katakana_phonetic_extensions", katakana_extensions_size);
+
+	// option設定の読み込み
+	auto it_option = settings.find("opt_char");
+	if (it_option != settings.end())
+	{
+		std::istringstream iss(it_option->second);
+		std::string item;
+		while (std::getline(iss, item, ','))
 		{
-			kanjiSize = 1.0;
+			auto pos = item.find('=');
+			if (pos != std::string::npos)
+			{
+				try
+				{
+					char32_t code_point = std::stoul(item.substr(0, pos), nullptr, 16);
+					double ratio = std::stod(item.substr(pos + 1));
+					option_ratios[code_point] = ratio;
+				}
+				catch (...)
+				{
+					// 無効なエントリは無視
+				}
+			}
 		}
 	}
 
-	for (const auto& text : texts)
+	auto process_text = [&](const Array<String>& inputTexts,
+	                        int32& currentLineCount)
 	{
-		const Array<PolygonGlyph> polygonGlyphs = font.renderPolygons(text);
-		const Array<bool> isKanji = text.map([](const char32_t ch)
+		for (const auto& text : inputTexts)
 		{
-			return
-				((0x4E00 <= ch) && (ch <= 0x9FFF)) || // 基本的な漢字
-				((0x3400 <= ch) && (ch <= 0x4DBF)) || // 拡張A
-				((0x20000 <= ch) && (ch <= 0x2A6DF)) || // 拡張B
-				((0x2A700 <= ch) && (ch <= 0x2B73F)) || // 拡張C
-				((0x2B740 <= ch) && (ch <= 0x2B81F)) || // 拡張D
-				((0x2B820 <= ch) && (ch <= 0x2CEAF)) || // 拡張E
-				((0x2CEB0 <= ch) && (ch <= 0x2EBEF)) || // 拡張F
-				((0xF900 <= ch) && (ch <= 0xFAFF)) || // CJK互換漢字
-				((0x2F800 <= ch) && (ch <= 0x2FA1F)); // CJK互換漢字補助
-		});
+			const Array<PolygonGlyph> polygonGlyphs = font.renderPolygons(text);
+			const Array<double> scales = text.map([&](const char32_t ch)
+			{
+				if (is_opt_char(ch, option_ratios))
+				{
+					return option_ratios[ch];
+				}
+				if (is_kanji(ch))
+				{
+					return kanji_size;
+				}
+				if (is_hiragana(ch))
+				{
+					return hiragana_size;
+				}
+				if (is_katakana(ch))
+				{
+					return katakana_size;
+				}
+				if (is_alphabet_upper_case(ch))
+				{
+					return alphabet_upper_size;
+				}
+				if (is_alphabet_lower_case(ch))
+				{
+					return alphabet_lower_size;
+				}
+				if (is_number(ch))
+				{
+					return number_size;
+				}
+				if (is_half_width_katakana(ch))
+				{
+					return half_width_katakana_size;
+				}
+				if (is_katakana_phonetic_extensions(ch))
+				{
+					return katakana_extensions_size;
+				}
+				return 1.0;
+			});
 
-		Vec2 basePos{0, bottomCenter.y};
+			Vec2 basePos{0, bottomCenter.y};
 
-		Array<P2Glyph> line;
+			Array<P2Glyph> line;
 
-		for (size_t i = 0; i < polygonGlyphs.size(); ++i)
-		{
-			const auto& polygonGlyph = polygonGlyphs[i];
-			const double scale = (isKanji[i] ? kanjiSize : 1.0);
+			for (size_t i = 0; i < polygonGlyphs.size(); ++i)
+			{
+				const auto& polygonGlyph = polygonGlyphs[i];
+				const double scale = scales[i];
 
-			P2Glyph glyph;
-			glyph.polygons = polygonGlyph.polygons.scaled(scale);
-			glyph.convexHull = CalculateConvexHull(polygonGlyph.polygons);
-			glyph.initialPos = (basePos + polygonGlyph.getBase(scale));
-			glyph.order = lineCount;
+				P2Glyph glyph;
+				glyph.polygons = polygonGlyph.polygons.scaled(scale);
+				glyph.convexHull = CalculateConvexHull(polygonGlyph.polygons, scale);
+				glyph.initialPos = (basePos + polygonGlyph.getBase(scale));
+				glyph.order = currentLineCount;
 
-			basePos.x += (polygonGlyph.xAdvance * scale);
-			line << glyph;
+				basePos.x += (polygonGlyph.xAdvance * scale);
+				line << glyph;
+			}
+
+			if (line.isEmpty())
+			{
+				continue;
+			}
+
+			// 現在の行の幅
+			const double lineLength = basePos.x;
+			const double halfLineLength = (lineLength * 0.5);
+
+			// 行を中心揃え
+			for (auto& elem : line)
+			{
+				elem.initialPos.x -= halfLineLength;
+				elem.initialPos.x += bottomCenter.x;
+			}
+
+			all_glyphs.insert(all_glyphs.end(), line.begin(), line.end());
+
+			--currentLineCount;
 		}
+	};
 
-		if (line.isEmpty())
-		{
-			continue;
-		}
+	process_text(texts, line_count);
+	process_text(fixed_text, line_count);
 
-		// 現在の行の幅
-		const double lineLength = basePos.x;
-		const double halfLineLength = (lineLength * 0.5);
-
-		// 行を中心揃え
-		for (auto& elem : line)
-		{
-			elem.initialPos.x -= halfLineLength;
-			elem.initialPos.x += bottomCenter.x;
-		}
-
-		allGlyphs.insert(allGlyphs.end(), line.begin(), line.end());
-
-		--lineCount;
-	}
-
-	for (const auto& fixed : fixed_text)
-	{
-		const Array<PolygonGlyph> polygonGlyphs = font.renderPolygons(fixed);
-		const Array<bool> isKanji = fixed.map([](const char32_t ch)
-		{
-			return
-				((0x4E00 <= ch) && (ch <= 0x9FFF)) || // 基本的な漢字
-				((0x3400 <= ch) && (ch <= 0x4DBF)) || // 拡張A
-				((0x20000 <= ch) && (ch <= 0x2A6DF)) || // 拡張B
-				((0x2A700 <= ch) && (ch <= 0x2B73F)) || // 拡張C
-				((0x2B740 <= ch) && (ch <= 0x2B81F)) || // 拡張D
-				((0x2B820 <= ch) && (ch <= 0x2CEAF)) || // 拡張E
-				((0x2CEB0 <= ch) && (ch <= 0x2EBEF)) || // 拡張F
-				((0xF900 <= ch) && (ch <= 0xFAFF)) || // CJK互換漢字
-				((0x2F800 <= ch) && (ch <= 0x2FA1F)); // CJK互換漢字補助
-		});
-
-		Vec2 basePos{0, bottomCenter.y};
-
-		Array<P2Glyph> line;
-
-		for (size_t i = 0; i < polygonGlyphs.size(); ++i)
-		{
-			const auto& polygonGlyph = polygonGlyphs[i];
-			const double scale = (isKanji[i] ? kanjiSize : 1.0);
-			P2Glyph glyph;
-			glyph.polygons = polygonGlyph.polygons.scaled(scale);
-			glyph.convexHull = CalculateConvexHull(polygonGlyph.polygons);
-			glyph.initialPos = (basePos + polygonGlyph.getBase(scale));
-			glyph.order = lineCount;
-
-			basePos.x += (polygonGlyph.xAdvance * scale);
-			line << glyph;
-		}
-
-		if (line.isEmpty())
-		{
-			continue;
-		}
-
-		// 現在の行の幅
-		const double lineLength = basePos.x;
-		const double halfLineLength = (lineLength * 0.5);
-
-		// 行を中心揃え
-		for (auto& elem : line)
-		{
-			elem.initialPos.x -= halfLineLength;
-			elem.initialPos.x += bottomCenter.x;
-		}
-
-		allGlyphs.insert(allGlyphs.end(), line.begin(), line.end());
-
-		--lineCount;
-	}
-
-	return allGlyphs;
+	return all_glyphs;
 }
+
 
 void Main()
 {
