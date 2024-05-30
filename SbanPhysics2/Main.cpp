@@ -117,25 +117,22 @@ struct P2Glyph
 	}
 };
 
+namespace {
 /// @brief 物理演算用に多角形の凸包を計算
 /// @param polygons 多角形
 /// @return 凸包
-static Polygon CalculateConvexHull(const MultiPolygon& polygons,
-                                   const double scale)
-{
-	Array<Vec2> points;
+Polygon CalculateConvexHull(const MultiPolygon &polygons, const double scale) {
+  Array<Vec2> points;
 
-	for (const auto& polygon : polygons)
-	{
-		for (const auto& point : polygon.outer())
-		{
-			points << (point * scale); // スケールを適用
-		}
-	}
+  for (const auto &polygon : polygons) {
+    for (const auto &point : polygon.outer()) {
+      points << (point * scale); // スケールを適用
+    }
+  }
 
-	return Geometry2D::ConvexHull(points).simplified();
+  return Geometry2D::ConvexHull(points).simplified();
 }
-
+}
 
 /// @brief 各文字を生成
 /// @param bottomCenter 最下層の中心位置
