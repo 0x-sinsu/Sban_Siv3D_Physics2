@@ -306,7 +306,7 @@ Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
-	Window::SetTitle(U"Sban_Siv3D_Physics2");
+	Window::SetTitle(U"Siv3DGlyphsPhysics_2");
 
 	// 設定ファイルの存在チェック
 	if (!FileSystem::Exists(s3d_settings_file_path))
