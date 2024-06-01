@@ -117,21 +117,25 @@ struct P2Glyph
 	}
 };
 
-namespace {
-/// @brief 物理演算用に多角形の凸包を計算
-/// @param polygons 多角形
-/// @return 凸包
-Polygon CalculateConvexHull(const MultiPolygon &polygons, const double scale) {
-  Array<Vec2> points;
+namespace
+{
+	/// @brief 物理演算用に多角形の凸包を計算
+	/// @param polygons 多角形
+	/// @return 凸包
+	Polygon CalculateConvexHull(const MultiPolygon& polygons, const double scale)
+	{
+		Array<Vec2> points;
 
-  for (const auto &polygon : polygons) {
-    for (const auto &point : polygon.outer()) {
-      points << (point * scale); // スケールを適用
-    }
-  }
+		for (const auto& polygon : polygons)
+		{
+			for (const auto& point : polygon.outer())
+			{
+				points << (point * scale); // スケールを適用
+			}
+		}
 
-  return Geometry2D::ConvexHull(points).simplified();
-}
+		return Geometry2D::ConvexHull(points).simplified();
+	}
 }
 
 /// @brief 各文字を生成
@@ -306,8 +310,6 @@ Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font,
 
 void Main()
 {
-	Window::SetTitle(U"Siv3DGlyphsPhysics_2");
-
 	// 設定ファイルの存在チェック
 	if (!FileSystem::Exists(s3d_settings_file_path))
 	{
@@ -315,15 +317,13 @@ void Main()
 		return;
 	}
 
-	// 背景色
-	Scene::SetBackground(ColorF{0.0});
-
 	// 設定を読み込む
 	std::unordered_map<std::string, std::string> settings = load_settings(settings_file_path);
 
 	// 設定ファイルの内容を取得
 	Array<std::string> texts;
 	Array<std::string> fixed_text;
+	std::string background_color;
 	std::string simulation_speed;
 	std::string font_path;
 	std::string font_size;
@@ -408,6 +408,11 @@ void Main()
 		return;
 	}
 	if (!get_array_setting("fixed_text_path", fixed_text, "fixed_text_path が設定ファイルにありません。"))
+	{
+		return;
+	}
+	if (!get_setting("background_color", background_color,
+	                 "background_color が設定ファイルにありません。"))
 	{
 		return;
 	}
@@ -535,7 +540,6 @@ void Main()
 		Window::Resize(window_width, window_height);
 	}
 
-
 	// s3d::Array<s3d::String> に変換
 	Array<String> s3d_texts = ConvertToS3DArray(texts);
 	Array<String> s3d_fixed_text =
@@ -571,6 +575,11 @@ void Main()
 			speed = 1;
 		}
 	}
+
+	Window::SetTitle(U"Siv3DGlyphsPhysics_2");
+	// 背景
+	Scene::SetBackground(
+		ColorF{U"#" + Unicode::Widen(background_color)});
 
 	// 2D 物理演算のシミュレーションステップ（秒）
 	constexpr double step_time = (1.0 / 200.0);
