@@ -649,9 +649,6 @@ void Main()
 						// 文字の物理演算の物体を作成
 						glyph.body = world.createPolygon(P2Dynamic, glyph.initialPos, glyph.convexHull);
 
-						// 文字によって重力の倍率を変える
-						glyph.body.setGravityScale(Random(1.0, 1.25));
-
 						// 後ろが詰まらないように下向きの初速を与える
 						glyph.body.setVelocity(Vec2{0, 90});
 					}
