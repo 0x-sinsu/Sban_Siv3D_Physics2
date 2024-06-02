@@ -324,6 +324,8 @@ void Main()
 	Array<std::string> texts;
 	Array<std::string> fixed_text;
 	std::string background_color;
+	std::string texts_color;
+	std::string fixed_color;
 	std::string simulation_speed;
 	std::string font_path;
 	std::string font_size;
@@ -411,11 +413,18 @@ void Main()
 	{
 		return;
 	}
-	if (!get_setting("background_color", background_color,
-	                 "background_color が設定ファイルにありません。"))
+	if (!get_setting("background_color", background_color, "background_color が設定ファイルにありません。"))
 	{
 		return;
 	}
+        if (!get_setting("texts_color", texts_color,
+                         "texts_color が設定ファイルにありません。")) {
+          return;
+        }
+        if (!get_setting("fixed_color", fixed_color,
+                         "fixed_color が設定ファイルにありません。")) {
+          return;
+        }
 	if (!get_setting("simulation_speed", simulation_speed, "simulation_speed が設定ファイルにありません。"))
 	{
 		return;
@@ -578,8 +587,7 @@ void Main()
 
 	Window::SetTitle(U"Siv3DGlyphsPhysics_2");
 	// 背景
-	Scene::SetBackground(
-		ColorF{U"#" + Unicode::Widen(background_color)});
+	Scene::SetBackground(ColorF{U"#" + Unicode::Widen(background_color)});
 
 	// 2D 物理演算のシミュレーションステップ（秒）
 	constexpr double step_time = (1.0 / 200.0);
@@ -605,11 +613,10 @@ void Main()
 	const Vec2 textPos((screen_width - text_width) / 2, (screen_height - text_height) / 2);
 
 	// 出力されたP2Glyphの配列を処理して物理ワールドに追加
-	Array<P2Glyph> glyphs = GenerateGlyphs(Vec2{0, -1100}, font, s3d_texts, Array<String>{});
-	Array<P2Glyph> glyph2 =
-		GenerateGlyphs(Vec2{0, 0}, font, s3d_fixed_text, Array<String>{});
+	Array<P2Glyph> glyph_texts = GenerateGlyphs(Vec2{0, -1100}, font, s3d_texts, Array<String>{});
+	Array<P2Glyph> glyph_fixed = GenerateGlyphs(Vec2{0, 0}, font, s3d_fixed_text, Array<String>{});
 
-	for (auto& glyph : glyph2)
+	for (auto& glyph : glyph_fixed)
 	{
 		// 物理ボディを物理ワールドに追加
 		glyph.body = world.createPolygon(P2Static, glyph.initialPos, glyph.convexHull);
@@ -634,7 +641,7 @@ void Main()
 				++active_order;
 
 				// 同じ順番の文字の物理演算の物体を作成する
-				for (auto& glyph : glyphs)
+				for (auto& glyph : glyph_texts)
 				{
 					if (glyph.order == active_order)
 					{
@@ -656,17 +663,21 @@ void Main()
 			const auto t = camera.createTransformer();
 
 			// 各 P2Glyph の描画
-			for (const auto& glyph : glyphs)
+			for (const auto& glyph : glyph_texts)
 			{
-				glyph.draw(ColorF{0.93});
+                          glyph.draw(
+                              ColorF{U"#" + Unicode::Widen(texts_color)});
+                          ;
 			}
-			for (const auto& glyph : glyph2)
+			for (const auto& glyph : glyph_fixed)
 			{
-				glyph.draw(ColorF{0.93});
+                          glyph.draw(
+                              ColorF{U"#" + Unicode::Widen(fixed_color)});
+                          ;
 			}
 		}
 
-		glyphs.remove_if([&](const P2Glyph& glyph)
+		glyph_texts.remove_if([&](const P2Glyph& glyph)
 		{
 			return glyph.body &&
 				(glyph.body.getPos().y > (Scene::Height() + 100));
