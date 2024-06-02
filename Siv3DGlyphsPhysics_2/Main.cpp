@@ -389,7 +389,7 @@ void Main()
 
 
 	auto get_array_setting = [&](const std::string& key, Array<std::string>& array,
-	                             const std::string& errorMessage)
+	                             const std::string& error_message)
 	{
 		auto it = settings.find(key);
 		if (it != settings.end())
@@ -398,7 +398,7 @@ void Main()
 		}
 		else
 		{
-			System::MessageBoxOK(Unicode::Widen(errorMessage), MessageBoxStyle::Error);
+			System::MessageBoxOK(Unicode::Widen(error_message), MessageBoxStyle::Error);
 			return false;
 		}
 		return true;
@@ -417,14 +417,16 @@ void Main()
 	{
 		return;
 	}
-        if (!get_setting("texts_color", texts_color,
-                         "texts_color が設定ファイルにありません。")) {
-          return;
-        }
-        if (!get_setting("fixed_color", fixed_color,
-                         "fixed_color が設定ファイルにありません。")) {
-          return;
-        }
+	if (!get_setting("texts_color", texts_color,
+	                 "texts_color が設定ファイルにありません。"))
+	{
+		return;
+	}
+	if (!get_setting("fixed_color", fixed_color,
+	                 "fixed_color が設定ファイルにありません。"))
+	{
+		return;
+	}
 	if (!get_setting("simulation_speed", simulation_speed, "simulation_speed が設定ファイルにありません。"))
 	{
 		return;
@@ -457,8 +459,8 @@ void Main()
 	}
 	else
 	{
-		int window_width;
-		int window_height;
+		int window_width = 0;
+		int window_height = 0;
 
 		// 設定から window_width を取得
 		auto it_window_width = settings.find("window_width");
@@ -551,13 +553,12 @@ void Main()
 
 	// s3d::Array<s3d::String> に変換
 	Array<String> s3d_texts = ConvertToS3DArray(texts);
-	Array<String> s3d_fixed_text =
-		ConvertToS3DArray(fixed_text);
+	Array<String> s3d_fixed_text = ConvertToS3DArray(fixed_text);
 
 	// std::stringからs3d::Stringへ変換
 	String s3d_font_path = Unicode::FromUTF8(font_path);
 
-	int int_font_size;
+	int int_font_size = 0;
 	try
 	{
 		int_font_size = std::stoi(font_size);
@@ -665,15 +666,13 @@ void Main()
 			// 各 P2Glyph の描画
 			for (const auto& glyph : glyph_texts)
 			{
-                          glyph.draw(
-                              ColorF{U"#" + Unicode::Widen(texts_color)});
-                          ;
+				glyph.draw(
+					ColorF{U"#" + Unicode::Widen(texts_color)});;
 			}
 			for (const auto& glyph : glyph_fixed)
 			{
-                          glyph.draw(
-                              ColorF{U"#" + Unicode::Widen(fixed_color)});
-                          ;
+				glyph.draw(
+					ColorF{U"#" + Unicode::Widen(fixed_color)});;
 			}
 		}
 
