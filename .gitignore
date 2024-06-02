@@ -416,11 +416,11 @@ gmon.out
 **/App/AS_DEBUG/
 **/App/Screenshot/
 
-# Ignore resource files
-#**/App/example
-#**/App/engine
-#**/App/dll
-/SbanPhysics2/App/fixed.txt
-/SbanPhysics2/App/lyrics.txt
-/SbanPhysics2/App/GenZenGothic改.ttf
-/SbanPhysics2/App/settings.conf
+# デバッグ用ファイル
+**/App/*.txt
+**/App/GenZenGothic改.ttf
+**/App/*.conf
+
+# ビルドファイル(一応)
+Intermediate/
+/SbanPhysics2/App/settingsq.conf
