@@ -1,22 +1,22 @@
-#pragma once
+ï»¿#pragma once
 
 #include <cstdint>
 
-// ƒAƒ‹ƒtƒ@ƒxƒbƒg
+// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆ
 constexpr uint32_t UNICODE_ALPHA_START = 0x0041;
 constexpr uint32_t UNICODE_ALPHA_END = 0x005A;
 constexpr uint32_t UNICODE_ALPHA_LOWER_START = 0x0061;
 constexpr uint32_t UNICODE_ALPHA_LOWER_END = 0x007A;
 
-// ”š
+// æ•°å­—
 constexpr uint32_t UNICODE_NUMBER_START = 0x0030;
 constexpr uint32_t UNICODE_NUMBER_END = 0x0039;
 
-// ƒvƒŠƒ“ƒg‰Â”\‚È ASCII •¶š
+// ãƒ—ãƒªãƒ³ãƒˆå¯èƒ½ãª ASCII æ–‡å­—
 constexpr uint32_t PRINTABLE_ASCII_START = 0x0020; // ' '
 constexpr uint32_t PRINTABLE_ASCII_END = 0x007E; // '~'
 
-// ‹L†
+// è¨˜å·
 constexpr uint32_t SYMBOL_START = 0x0021; // '!'
 constexpr uint32_t SYMBOL_END = 0x002F; // '/'
 constexpr uint32_t SYMBOL_EXTENDED_START = 0x003A; // ':'
@@ -26,7 +26,7 @@ constexpr uint32_t SYMBOL_MISC_END = 0x0060; // '`'
 constexpr uint32_t SYMBOL_OTHER_START = 0x007B; // '{'
 constexpr uint32_t SYMBOL_OTHER_END = 0x007E; // '~'
 
-// ‚»‚Ì‘¼‚Ì‹L†‚â“Áê•¶š
+// ãã®ä»–ã®è¨˜å·ã‚„ç‰¹æ®Šæ–‡å­—
 constexpr uint32_t MISC_SYMBOL_START = 0x00A1;
 constexpr uint32_t MISC_SYMBOL_END = 0x00BF;
 constexpr uint32_t GENERAL_PUNCTUATION_START = 0x2000;
@@ -37,23 +37,23 @@ constexpr uint32_t HALFWIDTH_FULLWIDTH_FORMS_START = 0xFF00;
 constexpr uint32_t HALFWIDTH_FULLWIDTH_FORMS_END = 0xFFEF;
 
 
-// •½‰¼–¼
+// å¹³ä»®å
 constexpr uint32_t HIRAGANA_START = 0x3040;
 constexpr uint32_t HIRAGANA_END = 0x309F;
 
-// •Ğ‰¼–¼
+// ç‰‡ä»®å
 constexpr uint32_t KATAKANA_START = 0x30A0;
 constexpr uint32_t KATAKANA_END = 0x30FF;
 
-// ”¼Šp•Ğ‰¼–¼
+// åŠè§’ç‰‡ä»®å
 constexpr uint32_t HALF_WIDTH_KATAKANA_START = 0xFF65;
 constexpr uint32_t HALF_WIDTH_KATAKANA_END = 0xFF9F;
 
-// •Ğ‰¼–¼Šg’£
+// ç‰‡ä»®åæ‹¡å¼µ
 constexpr uint32_t KATAKANA_PHONETIC_EXTENSIONS_START = 0x31F0;
 constexpr uint32_t KATAKANA_PHONETIC_EXTENSIONS_END = 0x31FF;
 
-// ŠeíŠ¿š
+// å„ç¨®æ¼¢å­—
 constexpr uint32_t KANJI_CJK_UNIFIED_IDEOGRAPHS_START = 0x4E00;
 constexpr uint32_t KANJI_CJK_UNIFIED_IDEOGRAPHS_END = 0x9FFF;
 
