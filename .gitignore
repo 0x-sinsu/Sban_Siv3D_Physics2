@@ -423,4 +423,4 @@ gmon.out
 
 # ビルドファイル(一応)
 Intermediate/
-/SbanPhysics2/App/settingsq.conf
+**/Build/
