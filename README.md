@@ -16,7 +16,7 @@ ReleaseからLatestなZipを落として展開します。
       Lsettings.conf
       Lfixed.txt
       Llyrics.txt
-バージョンによって中身が違うことがありますが。  
+バージョンによって中身が違うことがありますが、だいたい同じです。大きく異なるときはReadmeを編集するので...  
 #### ファイルの説明  
     SbanPhysics2.exe - 本体  
     settings.conf - 設定ファイル  
@@ -25,14 +25,36 @@ ReleaseからLatestなZipを落として展開します。
 (後日追記)
   
 #### 設定する  
-settings.confは、<br><br>
-`simulationSpeed=`...スピードを指定する  
-`frameRate=`...フレームレートを指定する  
-`fontSize=`...フォントサイズを指定する  
-`fontPath=`...フォントパスを指定する<br><br>
-といった感じで値を指定しておきます。  
-UTF-8で保存します。(lyrics.txt,fixed.txtも同様)
-(後日追記)
+settings.confは次のように設定します。<br><br>
+```
+lyrics_path=./lyrics.txt(変えない)
+fixed_text_path=./fixed.txt(変えない)
+simulation_speed=(スピードを指定、1.75など)
+window_width=(ウィンドウの横幅を指定、1600など)
+window_height=(ウィンドウの縦幅を指定、900など)
+background_color=(背景の色を指定、000000など6桁のカラーコードを指定する)
+texts_color=(降ってくる文字の色を指定、background_colorと同様)
+fixed_color=(中央に固定される文字の色を指定、background_colorと同様)
+font_size=(フォントサイズを指定、75など)
+font_path=(フォントパスを指定)
+
+(以下はフォントサイズの比率を指定。font_sizeで指定したものが1となる)
+kanji=
+hiragana=
+katakana=
+alphabet_upper=
+alphabet_lower=
+number=
+half_width_katakana=
+katakana_phonetic_extensions=
+opt_char=(ここでは特定の文字の比率を変えることができる。以下に記述)
+```
+
+opt_charの使い方:例えば「全」(U+5168)の字の比率を5.5に、「て」(U+3066)の字の比率を10.0にしたい場合、  
+`opt_char=0x5168=5.5,0x3066=10.0`  
+となります。  
+
+ファイルはUTF-8で保存します。(lyrics.txt,fixed.txtも)  
   
 ## ソースからビルド  
 OpenSiv3DのSDKが必要です。  
