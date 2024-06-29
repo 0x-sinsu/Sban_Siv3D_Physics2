@@ -2,6 +2,3 @@
 indent_style = tab
 indent_size = tab
 tab_width = 4
-[*]
-[*.{c,cc,cpp,cxx,h,hh,hpp,hxx}]
-charset = utf-8
