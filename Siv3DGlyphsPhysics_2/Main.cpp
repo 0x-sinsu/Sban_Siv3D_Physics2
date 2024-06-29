@@ -536,17 +536,11 @@ void Main()
     // std::stringからs3d::Stringへ変換
     String s3d_font_path = Unicode::FromUTF8(font_path);
 
-    double int_font_size;
-    try
-    {
-        int_font_size = std::stoi(font_size);
-    }
-    catch (const std::exception)
-    {
-    }
+	// font_sizeをdouble型へ変換
+	double double_font_size = std::stod(font_size);
 
     // Fontオブジェクトを初期化
-    const Font font(int_font_size, s3d_font_path);
+    const Font font(double_font_size, s3d_font_path);
 
     Array<P2Body> body;
 
@@ -660,9 +654,9 @@ void Main()
             }
         }
 
-		// スクリーンの高さ+100まで落ちたら物体を削除
+		// スクリーンの高さ+double_font_sizeまで落ちたら物体を削除
         glyph_texts.remove_if([&](const P2Glyph& glyph)
-		{ return glyph.body && (glyph.body.getPos().y > (Scene::Height() + 100)); });
+		{ return glyph.body && (glyph.body.getPos().y > (Scene::Height() + double_font_size)); });
 
         for (accumulated_time += (Scene::DeltaTime() * speed); step_time <= accumulated_time;
              accumulated_time -= step_time)
