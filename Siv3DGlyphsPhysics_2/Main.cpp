@@ -42,25 +42,25 @@ Array<std::string> load_text(const std::string& file_path)
 }
 
 // std::vector<std::string> を s3d::Array<s3d::String> に変換する関数
-Array<String> ConvertToS3DArray(const std::vector<std::string>& stdVector)
+Array<String> convert_to_s3d_array(const std::vector<std::string>& std_vector)
 {
-    Array<String> s3dArray;
-    for (const auto& stdString : stdVector)
+    Array<String> s3d_array;
+    for (const auto& std_string : std_vector)
     {
-        s3dArray.push_back(Unicode::FromUTF8(stdString));
+        s3d_array.push_back(Unicode::FromUTF8(std_string));
     }
-    return s3dArray;
+    return s3d_array;
 }
 
 // std::vector<std::string> を s3d::String に変換する関数
-String ConvertToS3DString(const std::vector<std::string>& stdVector)
+String convert_to_s3d_string(const std::vector<std::string>& std_vector)
 {
-    String s3dString;
-    for (const auto& stdString : stdVector)
+    String s3d_string;
+    for (const auto& std_string : std_vector)
     {
-        s3dString += Unicode::FromUTF8(stdString) + U"\n";
+        s3d_string += Unicode::FromUTF8(std_string) + U"\n";
     }
-    return s3dString;
+    return s3d_string;
 }
 
 // 小数を含む数値の判定関数
@@ -106,10 +106,10 @@ struct P2Glyph
     MultiPolygon polygons;
 
     /// @brief 文字のポリゴンの凸包
-    Polygon convexHull;
+    Polygon convex_hull;
 
     /// @brief 初期位置
-    Vec2 initialPos{0, 0};
+    Vec2 initial_pos{0, 0};
 
     /// @brief 落ちる順番
     int32 order = 0;
@@ -130,7 +130,7 @@ struct P2Glyph
 /// @brief 物理演算用に多角形の凸包を計算
 /// @param polygons 多角形
 /// @return 凸包
-Polygon CalculateConvexHull(const MultiPolygon& polygons, const double scale)
+Polygon calc_convex_hull(const MultiPolygon& polygons, const double scale)
 {
     Array<Vec2> points;
     for (const auto& polygon : polygons)
@@ -150,7 +150,7 @@ Polygon CalculateConvexHull(const MultiPolygon& polygons, const double scale)
 /// @param texts 歌詞
 /// @param fixed_text 固定文字
 /// @return P2Glyph の配列
-Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font, const Array<String>& texts,
+Array<P2Glyph> generate_glyphs(const Vec2& bottom_center, const Font& font, const Array<String>& texts,
                               const Array<String>& fixed_text)
 {
     Array<P2Glyph> all_glyphs;
@@ -264,7 +264,7 @@ Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font, const 
                     return 1.0;
                 });
 
-            Vec2 basePos{0, bottomCenter.y};
+            Vec2 base_pos{0, bottom_center.y};
 
             Array<P2Glyph> line;
 
@@ -275,11 +275,11 @@ Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font, const 
 
                 P2Glyph glyph;
                 glyph.polygons = polygonGlyph.polygons.scaled(scale);
-                glyph.convexHull = CalculateConvexHull(polygonGlyph.polygons, scale);
-                glyph.initialPos = (basePos + polygonGlyph.getBase(scale));
+                glyph.convex_hull = calc_convex_hull(polygonGlyph.polygons, scale);
+                glyph.initial_pos = (base_pos + polygonGlyph.getBase(scale));
                 glyph.order = currentLineCount;
 
-                basePos.x += (polygonGlyph.xAdvance * scale);
+                base_pos.x += (polygonGlyph.xAdvance * scale);
                 line << glyph;
             }
 
@@ -289,14 +289,14 @@ Array<P2Glyph> GenerateGlyphs(const Vec2& bottomCenter, const Font& font, const 
             }
 
             // 現在の行の幅
-            const double lineLength = basePos.x;
-            const double halfLineLength = (lineLength * 0.5);
+            const double line_length = base_pos.x;
+            const double half_line_length = (line_length * 0.5);
 
             // 行を中心揃え
             for (auto& elem : line)
             {
-                elem.initialPos.x -= halfLineLength;
-                elem.initialPos.x += bottomCenter.x;
+                elem.initial_pos.x -= half_line_length;
+                elem.initial_pos.x += bottom_center.x;
             }
 
             all_glyphs.insert(all_glyphs.end(), line.begin(), line.end());
@@ -524,23 +524,31 @@ void Main()
 
     if (!msg.empty())
     {
-        String s3d_msg = ConvertToS3DString(msg);
+        String s3d_msg = convert_to_s3d_string(msg);
         System::MessageBoxOK(s3d_msg, MessageBoxStyle::Error);
         return;
     }
 
     // s3d::Array<s3d::String> に変換
-    Array<String> s3d_texts = ConvertToS3DArray(texts);
-    Array<String> s3d_fixed_text = ConvertToS3DArray(fixed_text);
+    Array<String> s3d_texts = convert_to_s3d_array(texts);
+    Array<String> s3d_fixed_text = convert_to_s3d_array(fixed_text);
 
     // std::stringからs3d::Stringへ変換
     String s3d_font_path = Unicode::FromUTF8(font_path);
 
-	// font_sizeをdouble型へ変換
-	double double_font_size = std::stod(font_size);
+	// font_size を int 型へ変換(失敗した場合エラーにする)
+	int int_font_size;
+    try
+    {
+        int_font_size = std::stoi(font_size);
+    }
+    catch (const std::invalid_argument)
+    {
+        msg.push_back("font_size の値が無効です。\n");
+    }
 
     // Fontオブジェクトを初期化
-    const Font font(double_font_size, s3d_font_path);
+    const Font font(int_font_size, s3d_font_path);
 
     Array<P2Body> body;
 
@@ -597,13 +605,13 @@ void Main()
     const Vec2 textPos((screen_width - text_width) / 2, (screen_height - text_height) / 2);
 
     // 出力されたP2Glyphの配列を処理して物理ワールドに追加
-    Array<P2Glyph> glyph_texts = GenerateGlyphs(Vec2{0, -1100}, font, s3d_texts, Array<String>{});
-    Array<P2Glyph> glyph_fixed = GenerateGlyphs(Vec2{0, 0}, font, s3d_fixed_text, Array<String>{});
+    Array<P2Glyph> glyph_texts = generate_glyphs(Vec2{0, -1100}, font, s3d_texts, Array<String>{});
+    Array<P2Glyph> glyph_fixed = generate_glyphs(Vec2{0, 0}, font, s3d_fixed_text, Array<String>{});
 
     for (auto& glyph : glyph_fixed)
     {
         // 物理ボディを物理ワールドに追加
-        glyph.body = world.createPolygon(P2Static, glyph.initialPos, glyph.convexHull);
+        glyph.body = world.createPolygon(P2Static, glyph.initial_pos, glyph.convex_hull);
     }
 
     Camera2D camera{Vec2{0, 0}, 1.0, CameraControl::None_};
@@ -630,7 +638,7 @@ void Main()
                     if (glyph.order == active_order)
                     {
                         // 文字の物理演算の物体を作成
-                        glyph.body = world.createPolygon(P2Dynamic, glyph.initialPos, glyph.convexHull);
+                        glyph.body = world.createPolygon(P2Dynamic, glyph.initial_pos, glyph.convex_hull);
 
                         // 後ろが詰まらないように下向きの初速を与える
                         glyph.body.setVelocity(Vec2{0, 90});
@@ -654,9 +662,9 @@ void Main()
             }
         }
 
-		// スクリーンの高さ+double_font_sizeまで落ちたら物体を削除
+		// スクリーンの高さ + double_font_size まで落ちたら物体を削除
         glyph_texts.remove_if([&](const P2Glyph& glyph)
-		{ return glyph.body && (glyph.body.getPos().y > (Scene::Height() + double_font_size)); });
+		{ return glyph.body && (glyph.body.getPos().y > (Scene::Height() + int_font_size)); });
 
         for (accumulated_time += (Scene::DeltaTime() * speed); step_time <= accumulated_time;
              accumulated_time -= step_time)
